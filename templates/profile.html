@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile – MealPrep</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<header>
+  <div class="logo">MealPrep</div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/meals">Meals</a>
+    <a href="/my_orders">My Orders</a>
+    <a href="/logout">Logout</a>
+  </nav>
+</header>
+<main>
+  <h1>Your Profile</h1>
+  <form id="profile-form">
+    <label>Name <input type="text" name="name"></label>
+    <label>Address <input type="text" name="address"></label>
+    <label>Phone <input type="text" name="phone"></label>
+    <button type="submit">Save</button>
+  </form>
+
+  <h2>Subscription</h2>
+  <div id="subs"></div>
+</main>
+<script>
+document.getElementById("profile-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  await fetch("/api/profile", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      name: f.get("name"),
+      address: f.get("address"),
+      phone: f.get("phone")
+    })
+  });
+  alert("Profile saved");
+});
+
+async function loadSubs() {
+  const res = await fetch("/api/subscriptions");
+  const subs = await res.json();
+  const container = document.getElementById("subs");
+  subs.forEach(s => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <h3>${s.name}</h3>
+      <p>$${s.price.toFixed(2)} / week</p>
+      <button onclick="subscribe(${s.id})">Choose</button>
+    `;
+    container.appendChild(div);
+  });
+}
+async function subscribe(id) {
+  await fetch("/api/subscribe", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({plan_id: id})
+  });
+  alert("Subscription updated");
+}
+loadSubs();
+</script>
+</body>
+</html>

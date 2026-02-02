@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Subscription – MealPrep</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .sub-container { max-width: 900px; margin: 40px auto; }
+    .meal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .meal-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .meal-card:hover {
+      background: #f7f7f7;
+    }
+    .meal-card.selected {
+      border-color: #2e7d32;
+      box-shadow: 0 0 0 2px #2e7d32;
+      background: #e8f5e9;
+    }
+    .btn {
+      padding: 10px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: #2e7d32;
+      color: #fff;
+      margin-top: 15px;
+    }
+    .btn-danger {
+      background: #c62828;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MealPrep</div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/meals">Meals</a>
+    <a href="/subscription">Subscription</a>
+    <a href="/my_subscription" class="active">My Subscription</a>
+    <a href="/tracking">Tracking</a>
+    <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+
+    <div id="login-links" style="display:flex; gap:10px;">
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </div>
+
+    <div id="profile-area" style="display:none; gap:10px;">
+      <span id="profile-name"></span>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+</header>
+
+<main class="sub-container">
+  <h1>My Subscription</h1>
+  <div id="sub-info"></div>
+
+  <h2>Select 5 Meals for This Week</h2>
+  <p id="selection-hint">Select exactly 5 meals.</p>
+
+  <div id="meal-grid" class="meal-grid"></div>
+
+  <button class="btn" onclick="saveSelection()">Save Selection</button>
+  <button class="btn btn-danger" onclick="cancelSubscription()">Cancel Subscription</button>
+</main>
+
+<script>
+let ALL_MEALS = [];
+let selectedIds = [];
+
+function formatDate(ts) {
+  if (!ts) return "Not scheduled";
+  const d = new Date(ts * 1000);
+  return d.toLocaleDateString() + " " + d.toLocaleTimeString();
+}
+
+async function loadData() {
+  const [subRes, mealsRes] = await Promise.all([
+    fetch("/api/my_subscription"),
+    fetch("/api/meals")
+  ]);
+
+  if (subRes.status !== 200) {
+    document.getElementById("sub-info").innerText = "You don't have an active subscription.";
+    return;
+  }
+
+  const subData = await subRes.json();
+  const meals = await mealsRes.json();
+
+  ALL_MEALS = meals.filter(m => m.subscription);
+
+  const infoDiv = document.getElementById("sub-info");
+
+  if (!subData.plan) {
+    infoDiv.innerText = "You don't have an active subscription.";
+  } else {
+    infoDiv.innerHTML = `
+      <p><strong>Plan:</strong> ${subData.plan.name} – $${subData.plan.price.toFixed(2)}/week</p>
+      <p><strong>Next Delivery:</strong> ${formatDate(subData.next_delivery)}</p>
+    `;
+  }
+
+  selectedIds = subData.meals || [];
+  renderMeals();
+}
+
+function renderMeals() {
+  const grid = document.getElementById("meal-grid");
+  grid.innerHTML = "";
+
+  ALL_MEALS.forEach(m => {
+    const isSelected = selectedIds.includes(m.id);
+    grid.innerHTML += `
+      <div class="meal-card ${isSelected ? "selected" : ""}" onclick="toggleMeal(${m.id})">
+        <h3>${m.name}</h3>
+        <p>${m.description}</p>
+      </div>
+    `;
+  });
+
+  document.getElementById("selection-hint").innerText =
+    `Select exactly 5 meals. Currently selected: ${selectedIds.length}`;
+}
+
+function toggleMeal(id) {
+  if (selectedIds.includes(id)) {
+    selectedIds = selectedIds.filter(x => x !== id);
+  } else {
+    if (selectedIds.length >= 5) {
+      alert("You can only select 5 meals.");
+      return;
+    }
+    selectedIds.push(id);
+  }
+  renderMeals();
+}
+
+async function saveSelection() {
+  if (selectedIds.length !== 5) {
+    alert("You must select exactly 5 meals.");
+    return;
+  }
+
+  const res = await fetch("/api/subscription_meals", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ meal_ids: selectedIds })
+  });
+
+  const data = await res.json();
+  if (data.success) {
+    alert("Subscription meals updated!");
+  } else {
+    alert(data.message || "Error saving selection.");
+  }
+}
+
+async function cancelSubscription() {
+  if (!confirm("Are you sure you want to cancel your subscription?")) return;
+
+  const res = await fetch("/api/subscription_cancel", { method: "POST" });
+  const data = await res.json();
+
+  if (data.success) {
+    alert("Subscription cancelled.");
+    window.location.href = "/subscription";
+  } else {
+    alert("Error cancelling subscription.");
+  }
+}
+
+async function checkSession() {
+  try {
+    const res = await fetch("/api/my_orders");
+    if (res.status === 200) {
+      document.getElementById("profile-area").style.display = "flex";
+      document.getElementById("login-links").style.display = "none";
+
+      const profileRes = await fetch("/api/profile");
+      const data = await profileRes.json();
+
+      document.getElementById("profile-name").textContent = data.name || "User";
+
+      if (data.email === "admin@mealprep.com") {
+        document.getElementById("admin-link").style.display = "inline-block";
+      }
+    }
+  } catch (e) {}
+}
+
+checkSession();
+loadData();
+</script>
+
+</body>
+</html>

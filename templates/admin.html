@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard – MealPrep</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .admin-container { padding: 20px; }
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin-top: 20px;
+    }
+    .admin-card {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .admin-card h2 { margin-bottom: 15px; font-size: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+    th { background: #f3f5f9; }
+    .btn {
+      padding: 8px 14px;
+      background: #2e7d32;
+      color: white;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn-danger { background: #c62828; }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 450px;
+    }
+    .search-box {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .meal-result {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+    .meal-result:hover {
+      background: #f3f5f9;
+    }
+    .modal-content input, .modal-content select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MealPrep Admin</div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/logout">Logout</a>
+  </nav>
+</header>
+
+<main class="admin-container">
+  <h1>Admin Dashboard</h1>
+
+  <div class="admin-grid">
+
+    <div class="admin-card">
+      <h2>Orders</h2>
+      <table id="orders-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Status</th>
+            <th>Paid</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="btn" onclick="loadOrders()">Refresh Orders</button>
+    </div>
+
+    <div class="admin-card">
+      <h2>Statistics</h2>
+      <p id="stats-text">Loading...</p>
+      <button class="btn" onclick="loadStats()">Refresh Stats</button>
+    </div>
+
+    <div class="admin-card" style="grid-column: span 2;">
+      <h2>Meal Editor</h2>
+      <table id="meals-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button class="btn" onclick="openMealPopup()">Add Meal</button>
+    </div>
+
+  </div>
+</main>
+
+<div id="meal-modal" class="modal">
+  <div class="modal-content">
+    <h3>Meal Editor</h3>
+
+    <input type="text" id="meal-search" class="search-box" placeholder="Search meals...">
+    <div id="search-results"></div>
+
+    <h4 style="margin-top:15px;">Add / Edit Meal</h4>
+
+    <input type="hidden" id="edit-id">
+
+    <label>Name</label>
+    <input type="text" id="edit-name">
+
+    <label>Description</label>
+    <input type="text" id="edit-desc">
+
+    <label>Category</label>
+    <input type="text" id="edit-category">
+
+    <label>Price</label>
+    <input type="number" id="edit-price" step="0.01">
+
+    <label>Week (0 or 1)</label>
+    <input type="number" id="edit-week" min="0" max="1">
+
+    <label>Included in Subscription?</label>
+    <select id="edit-subscription">
+      <option value="false">No</option>
+      <option value="true">Yes</option>
+    </select>
+
+    <div style="margin-top:15px; display:flex; gap:10px;">
+      <button class="btn" onclick="saveMeal()">Save Meal</button>
+      <button class="btn-danger" onclick="closeMealPopup()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+async function loadOrders() {
+  const res = await fetch("/api/admin/orders");
+  const data = await res.json();
+  const tbody = document.querySelector("#orders-table tbody");
+  tbody.innerHTML = "";
+  data.forEach(o => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${o.order_id}</td>
+        <td>${o.user}</td>
+        <td>${o.status}</td>
+        <td>${o.paid ? "Yes" : "No"}</td>
+      </tr>
+    `;
+  });
+}
+
+async function loadStats() {
+  const res = await fetch("/api/admin/stats");
+  const s = await res.json();
+  document.getElementById("stats-text").innerHTML = `
+    Total Orders: <b>${s.total}</b><br>
+    Delivered: <b>${s.delivered}</b><br>
+    Unpaid: <b>${s.unpaid}</b>
+  `;
+}
+
+async function loadMeals() {
+  const res = await fetch("/api/admin/meals");
+  const data = await res.json();
+  window.ALL_ADMIN_MEALS = data;
+  const tbody = document.querySelector("#meals-table tbody");
+  tbody.innerHTML = "";
+  data.forEach(m => {
+    tbody.innerHTML += `
+      <tr onclick="loadMealIntoPopup(${m.id})" style="cursor:pointer;">
+        <td>${m.id}</td>
+        <td>${m.name}</td>
+        <td>${m.category || "N/A"}</td>
+        <td>$${m.price.toFixed(2)}</td>
+      </tr>
+    `;
+  });
+}
+
+function openMealPopup() {
+  document.getElementById("meal-modal").style.display = "flex";
+  document.getElementById("search-results").innerHTML = "";
+  document.getElementById("meal-search").value = "";
+  clearMealForm();
+}
+
+function closeMealPopup() {
+  document.getElementById("meal-modal").style.display = "none";
+}
+
+function clearMealForm() {
+  document.getElementById("edit-id").value = "";
+  document.getElementById("edit-name").value = "";
+  document.getElementById("edit-desc").value = "";
+  document.getElementById("edit-category").value = "";
+  document.getElementById("edit-price").value = "";
+  document.getElementById("edit-week").value = "";
+  document.getElementById("edit-subscription").value = "false";
+}
+
+document.getElementById("meal-search").addEventListener("input", () => {
+  const term = document.getElementById("meal-search").value.toLowerCase();
+  const meals = window.ALL_ADMIN_MEALS || [];
+  const results = meals.filter(m => m.name.toLowerCase().includes(term));
+  const box = document.getElementById("search-results");
+  box.innerHTML = "";
+  results.forEach(m => {
+    box.innerHTML += `
+      <div class="meal-result" onclick="loadMealIntoPopup(${m.id})">
+        ${m.name} – $${m.price.toFixed(2)}
+      </div>
+    `;
+  });
+});
+
+function loadMealIntoPopup(id) {
+  const meals = window.ALL_ADMIN_MEALS || [];
+  const m = meals.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById("edit-id").value = m.id;
+  document.getElementById("edit-name").value = m.name;
+  document.getElementById("edit-desc").value = m.description;
+  document.getElementById("edit-category").value = m.category || "";
+  document.getElementById("edit-price").value = m.price;
+  document.getElementById("edit-week").value = m.week || 0;
+  document.getElementById("edit-subscription").value = m.subscription ? "true" : "false";
+  document.getElementById("meal-modal").style.display = "flex";
+}
+
+async function saveMeal() {
+  const id = document.getElementById("edit-id").value;
+  const meal = {
+    id: id ? parseInt(id) : undefined,
+    name: document.getElementById("edit-name").value,
+    description: document.getElementById("edit-desc").value,
+    category: document.getElementById("edit-category").value,
+    price: parseFloat(document.getElementById("edit-price").value),
+    week: parseInt(document.getElementById("edit-week").value),
+    subscription: document.getElementById("edit-subscription").value === "true"
+  };
+  if (id) {
+    await fetch("/api/admin/meals_update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(meal)
+    });
+  } else {
+    await fetch("/api/admin/meals_add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(meal)
+    });
+  }
+  closeMealPopup();
+  loadMeals();
+}
+
+loadOrders();
+loadStats();
+loadMeals();
+</script>
+
+</body>
+</html>

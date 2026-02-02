@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Meals – MealPrep</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .meals-container { max-width: 1100px; margin: 40px auto; position: relative; }
+    .search-bar {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+    .meals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .meal-card {
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .meal-card h3 { margin: 0 0 8px; }
+    .meal-price { font-weight: bold; margin: 8px 0; }
+    .cart-panel {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 260px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      padding: 12px;
+      z-index: 20;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .cart-total {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .btn-small {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: #2e7d32;
+      color: #fff;
+      font-size: 13px;
+    }
+    .btn-remove {
+      background: #c62828;
+    }
+    .recent-orders {
+      margin-top: 40px;
+      padding: 20px;
+      background: #fafafa;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .order-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+    }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 30;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+    }
+    .modal-content input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MealPrep</div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/meals" class="active">Meals</a>
+    <a href="/subscription">Subscription</a>
+    <a href="/tracking">Tracking</a>
+    <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+
+    <div id="login-links" style="display:flex; gap:10px;">
+      <a href="/login" class="btn-login">Login</a>
+      <a href="/register" class="btn-register">Register</a>
+    </div>
+
+    <div id="profile-area" style="display:none; gap:10px;">
+      <span id="profile-name"></span>
+      <a href="/logout" class="btn-logout">Logout</a>
+    </div>
+  </nav>
+</header>
+
+<main class="meals-container">
+  <h1>All Meals</h1>
+  <input type="text" id="search" class="search-bar" placeholder="Search meals...">
+  <div id="meals-grid" class="meals-grid"></div>
+
+  <div id="recent-orders" class="recent-orders" style="display:none;">
+    <h2>Your Recent Orders</h2>
+    <div id="orders-list"></div>
+  </div>
+</main>
+
+<div id="cart-panel" class="cart-panel" style="display:none;">
+  <h3>Your Cart</h3>
+  <div id="cart-items"></div>
+  <div class="cart-total" id="cart-total"></div>
+  <button class="btn-small" onclick="openCheckout()">Checkout</button>
+</div>
+
+<div id="checkout-modal" class="modal">
+  <div class="modal-content">
+    <h3>Checkout</h3>
+    <input type="text" id="co-name" placeholder="Full Name">
+    <input type="text" id="co-address" placeholder="Address">
+    <input type="text" id="co-email" placeholder="Email">
+    <input type="text" id="co-card" placeholder="Card Number">
+    <input type="text" id="co-exp" placeholder="Expiry (MM/YY)">
+    <input type="text" id="co-cvv" placeholder="CVV">
+    <div style="display:flex; gap:10px; margin-top:10px;">
+      <button class="btn-small" onclick="placeOrder()">Place Order</button>
+      <button class="btn-small btn-remove" onclick="closeCheckout()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let ALL_MEALS = [];
+let CART = [];
+
+async function loadMeals() {
+  const res = await fetch("/api/meals");
+  const meals = await res.json();
+  ALL_MEALS = meals;
+  renderMeals(meals);
+}
+
+function renderMeals(meals) {
+  const grid = document.getElementById("meals-grid");
+  grid.innerHTML = "";
+  meals.forEach(meal => {
+    grid.innerHTML += `
+      <div class="meal-card">
+        <h3>${meal.name}</h3>
+        <p>${meal.description}</p>
+        <p class="meal-price">$${meal.price.toFixed(2)}</p>
+        <button class="btn-small" onclick="addToCart(${meal.id})">Add to Cart</button>
+        <a href="/meal?id=${meal.id}" class="btn-primary" style="margin-left:8px;">View</a>
+      </div>
+    `;
+  });
+}
+
+document.getElementById("search").addEventListener("input", () => {
+  const term = document.getElementById("search").value.toLowerCase();
+  const filtered = ALL_MEALS.filter(m =>
+    m.name.toLowerCase().includes(term) ||
+    m.description.toLowerCase().includes(term)
+  );
+  renderMeals(filtered);
+});
+
+function addToCart(id) {
+  const meal = ALL_MEALS.find(m => m.id === id);
+  if (!meal) return;
+  CART.push(meal);
+  renderCart();
+}
+
+function removeFromCart(index) {
+  CART.splice(index, 1);
+  renderCart();
+}
+
+function renderCart() {
+  const panel = document.getElementById("cart-panel");
+  const itemsDiv = document.getElementById("cart-items");
+  const totalDiv = document.getElementById("cart-total");
+
+  if (CART.length === 0) {
+    panel.style.display = "none";
+    return;
+  }
+
+  panel.style.display = "block";
+  itemsDiv.innerHTML = "";
+  let total = 0;
+  CART.forEach((m, i) => {
+    total += m.price;
+    itemsDiv.innerHTML += `
+      <div class="cart-item">
+        <span>${m.name}</span>
+        <span>
+          $${m.price.toFixed(2)}
+          <button class="btn-small btn-remove" onclick="removeFromCart(${i})">x</button>
+        </span>
+      </div>
+    `;
+  });
+  totalDiv.textContent = "Total: $" + total.toFixed(2);
+}
+
+function openCheckout() {
+  if (CART.length === 0) {
+    alert("Your cart is empty.");
+    return;
+  }
+  document.getElementById("checkout-modal").style.display = "flex";
+}
+
+function closeCheckout() {
+  document.getElementById("checkout-modal").style.display = "none";
+}
+
+async function placeOrder() {
+  if (CART.length === 0) {
+    alert("Your cart is empty.");
+    return;
+  }
+
+  const name = document.getElementById("co-name").value;
+  const address = document.getElementById("co-address").value;
+  const email = document.getElementById("co-email").value;
+
+  if (!name || !address || !email) {
+    alert("Please fill in name, address, and email.");
+    return;
+  }
+
+  const orderRes = await fetch("/api/orders", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      meals: CART.map(m => ({ id: m.id, name: m.name, price: m.price })),
+      customer: { name, address, email }
+    })
+  });
+
+  if (orderRes.status !== 201) {
+    alert("Error creating order.");
+    return;
+  }
+
+  const order = await orderRes.json();
+
+  await fetch("/api/pay", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order_id: order.order_id })
+  });
+
+  CART = [];
+  renderCart();
+  closeCheckout();
+
+  window.location.href = "/tracking?order_id=" + encodeURIComponent(order.order_id);
+}
+
+async function loadRecentOrders() {
+  const res = await fetch("/api/my_orders");
+  if (res.status !== 200) return;
+  const orders = await res.json();
+  const recent = orders.slice(-5).reverse();
+  const container = document.getElementById("orders-list");
+  container.innerHTML = "";
+  recent.forEach(o => {
+    container.innerHTML += `
+      <div class="order-item">
+        <strong>Order #${o.order_id}</strong><br>
+        Status: ${o.status}<br>
+        Meals: ${o.meals.map(m => m.name).join(", ")}
+      </div>
+    `;
+  });
+  document.getElementById("recent-orders").style.display = "block";
+}
+
+async function checkSession() {
+  try {
+    const res = await fetch("/api/my_orders");
+    if (res.status === 200) {
+      document.getElementById("profile-area").style.display = "flex";
+      document.getElementById("login-links").style.display = "none";
+      const profileRes = await fetch("/api/profile");
+      const data = await profileRes.json();
+      document.getElementById("profile-name").textContent = data.name || "User";
+      if (data.email === "admin@mealprep.com") {
+        document.getElementById("admin-link").style.display = "inline-block";
+      }
+      loadRecentOrders();
+    } else {
+      document.getElementById("profile-area").style.display = "none";
+      document.getElementById("login-links").style.display = "flex";
+    }
+  } catch (e) {}
+}
+
+checkSession();
+loadMeals();
+</script>
+
+</body>
+</html>

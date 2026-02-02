@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MealPrep – Checkout</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script defer src="/static/js/main.js"></script>
+</head>
+<body>
+  <header>
+    <div class="logo">MealPrep</div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/meals">Meals</a>
+      <a href="/tracking">Track Order</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Checkout</h1>
+    <section id="order-summary"></section>
+
+    <form id="checkout-form">
+      <h2>Your details</h2>
+      <label>Name <input type="text" name="name" required></label>
+      <label>Email <input type="email" name="email" required></label>
+      <label>Phone <input type="text" name="phone" required></label>
+      <label>Address <input type="text" name="address" required></label>
+      <button type="submit">Place Order</button>
+    </form>
+
+    <div id="checkout-result"></div>
+  </main>
+</body>
+</html>

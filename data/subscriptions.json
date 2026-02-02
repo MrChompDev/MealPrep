@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "Weekly Meal Box",
+    "description": "Get 5 meals delivered every week.",
+    "price": 49.99
+  },
+  {
+    "id": 2,
+    "name": "Family Plan",
+    "description": "10 meals per week for families.",
+    "price": 89.99
+  }
+]

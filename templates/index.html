@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MealPrep – Home</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">MealPrep</div>
+  <nav>
+    <a href="/" class="active">Home</a>
+    <a href="/meals">Meals</a>
+    <a href="/subscription">Subscription</a>
+    <a href="/tracking">Tracking</a>
+    <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+
+    <div id="login-links" style="display:flex; gap:10px;">
+      <a href="/login" class="btn-login">Login</a>
+      <a href="/register" class="btn-register">Register</a>
+    </div>
+
+    <div id="profile-area" style="display:none; gap:10px;">
+      <span id="profile-name"></span>
+      <a href="/logout" class="btn-logout">Logout</a>
+    </div>
+  </nav>
+</header>
+
+<main class="hero">
+  <h1>Fresh, Ready-to-Heat Meals</h1>
+  <p>Order healthy, delicious meals delivered to your door.</p>
+  <a href="/meals" class="btn-primary">Browse Meals</a>
+</main>
+
+<script>
+async function checkSession() {
+  try {
+    const res = await fetch("/api/my_orders");
+    if (res.status === 200) {
+      document.getElementById("profile-area").style.display = "flex";
+      document.getElementById("login-links").style.display = "none";
+      const profileRes = await fetch("/api/profile");
+      const data = await profileRes.json();
+      document.getElementById("profile-name").textContent = data.name || "User";
+      if (data.email === "admin@mealprep.com") {
+        document.getElementById("admin-link").style.display = "inline-block";
+      }
+    } else {
+      document.getElementById("profile-area").style.display = "none";
+      document.getElementById("login-links").style.display = "flex";
+    }
+  } catch (e) {}
+}
+checkSession();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+[
+  {
+    "email": "admin@mealprep.com",
+    "password": "mealprepadmin#123",
+    "session": "e43ff8449289b9dfcebb4842581d551b",
+    "name": "Admin",
+    "address": "",
+    "phone": "",
+    "reset_token": null,
+    "is_admin": true,
+    "subscription": null,
+    "subscription_paid": false,
+    "subscription_meals": []
+  },
+  {
+    "email": "buhnerboy2@gmail.com",
+    "password": "97568a6a3ed0a22552cc97fda0c8d974da72d825dd1b4b6473338c3f01ebb8dc",
+    "session": "e2c550cd1f1f2df30d6da215f7d5ad42",
+    "name": "",
+    "address": "",
+    "phone": "",
+    "reset_token": null,
+    "is_admin": false
+  }
+]

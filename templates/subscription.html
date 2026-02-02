@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Subscription – MealPrep</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .sub-container { max-width: 900px; margin: 40px auto; }
+    .plan-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .plan-card h2 { margin: 0 0 10px; }
+    .meal-list { margin-top: 10px; }
+    .meal-item { padding: 5px 0; border-bottom: 1px solid #eee; }
+    .btn-subscribe {
+      margin-top: 15px;
+      padding: 10px 16px;
+      background: #2e7d32;
+      color: white;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 400px;
+    }
+    .modal-content input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MealPrep</div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/meals">Meals</a>
+    <a href="/subscription" class="active">Subscription</a>
+    <a href="/my_subscription">My Subscription</a>
+    <a href="/tracking">Tracking</a>
+    <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+
+    <div id="login-links" style="display:flex; gap:10px;">
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </div>
+
+    <div id="profile-area" style="display:none; gap:10px;">
+      <span id="profile-name"></span>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+</header>
+
+<main class="sub-container">
+  <h1>Subscription Plans</h1>
+  <div id="plans"></div>
+</main>
+
+<!-- Payment Modal -->
+<div id="pay-modal" class="modal">
+  <div class="modal-content">
+    <h3>Enter Payment Details</h3>
+    <input type="text" id="card-name" placeholder="Name on Card">
+    <input type="text" id="card-number" placeholder="Card Number (16 digits)">
+    <input type="text" id="card-exp" placeholder="Expiry (MM/YY)">
+    <input type="text" id="card-cvv" placeholder="CVV">
+
+    <button class="btn-subscribe" onclick="submitPayment()">Pay & Subscribe</button>
+    <button class="btn-subscribe" style="background:#c62828;" onclick="closePay()">Cancel</button>
+  </div>
+</div>
+
+<script>
+let selectedPlan = null;
+
+async function loadPlans() {
+  const res = await fetch("/api/subscriptions");
+  const plans = await res.json();
+
+  const mealsRes = await fetch("/api/meals");
+  const meals = await mealsRes.json();
+
+  const includedMeals = meals.filter(m => m.subscription);
+
+  const container = document.getElementById("plans");
+  container.innerHTML = "";
+
+  plans.forEach(plan => {
+    container.innerHTML += `
+      <div class="plan-card">
+        <h2>${plan.name}</h2>
+        <p>${plan.description}</p>
+        <p><strong>Price:</strong> $${plan.price.toFixed(2)} / week</p>
+
+        <h3>Included Meals:</h3>
+        <div class="meal-list">
+          ${includedMeals.map(m => `<div class="meal-item">${m.name}</div>`).join("")}
+        </div>
+
+        <button class="btn-subscribe" onclick="openPay(${plan.id})">
+          Subscribe
+        </button>
+      </div>
+    `;
+  });
+}
+
+function openPay(planId) {
+  selectedPlan = planId;
+  document.getElementById("pay-modal").style.display = "flex";
+}
+
+function closePay() {
+  document.getElementById("pay-modal").style.display = "none";
+}
+
+async function submitPayment() {
+  const cardNumber = document.getElementById("card-number").value.trim();
+  if (cardNumber.length < 4) {
+    alert("Invalid card number.");
+    return;
+  }
+
+  const last4 = cardNumber.slice(-4);
+
+  const res = await fetch("/api/pay_subscription", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      plan_id: selectedPlan,
+      card_last4: last4
+    })
+  });
+
+  const data = await res.json();
+  if (data.success) {
+    alert("Subscription activated!");
+    window.location.href = "/my_subscription";
+  } else {
+    alert("You must be logged in.");
+  }
+}
+
+async function checkSession() {
+  try {
+    const res = await fetch("/api/my_orders");
+    if (res.status === 200) {
+      document.getElementById("profile-area").style.display = "flex";
+      document.getElementById("login-links").style.display = "none";
+
+      const profileRes = await fetch("/api/profile");
+      const data = await profileRes.json();
+
+      document.getElementById("profile-name").textContent = data.name || "User";
+
+      if (data.email === "admin@mealprep.com") {
+        document.getElementById("admin-link").style.display = "inline-block";
+      }
+    }
+  } catch (e) {}
+}
+
+checkSession();
+loadPlans();
+</script>
+
+</body>
+</html>

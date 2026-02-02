@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tracking – MealPrep</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .track-container { max-width: 700px; margin: 40px auto; }
+    .order-list {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
+    }
+    .order-item {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+    }
+    .order-item:hover {
+      background: #f7f7f7;
+    }
+    .status-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MealPrep</div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/meals">Meals</a>
+    <a href="/subscription">Subscription</a>
+    <a href="/tracking" class="active">Tracking</a>
+    <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+
+    <div id="login-links" style="display:flex; gap:10px;">
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </div>
+
+    <div id="profile-area" style="display:none; gap:10px;">
+      <span id="profile-name"></span>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+</header>
+
+<main class="track-container">
+  <h1>Your Orders</h1>
+
+  <div id="order-list" class="order-list"></div>
+
+  <h2>Live Tracking</h2>
+  <div class="status-box">
+    <p id="track-text">Select an order above.</p>
+  </div>
+</main>
+
+<script>
+let currentOrderId = null;
+let pollInterval = null;
+
+async function loadOrders() {
+  const res = await fetch("/api/my_orders");
+  if (res.status !== 200) {
+    document.getElementById("order-list").innerHTML = "You must be logged in.";
+    return;
+  }
+
+  const orders = await res.json();
+  const list = document.getElementById("order-list");
+  list.innerHTML = "";
+
+  orders.reverse().forEach(o => {
+    list.innerHTML += `
+      <div class="order-item" onclick="selectOrder('${o.order_id}')">
+        <strong>${o.order_id}</strong><br>
+        Status: ${o.status}<br>
+        Meals: ${o.meals.map(m => m.name).join(", ")}
+      </div>
+    `;
+  });
+}
+
+function selectOrder(orderId) {
+  currentOrderId = orderId;
+  document.getElementById("track-text").innerHTML = "Loading tracking info...";
+
+  if (pollInterval) clearInterval(pollInterval);
+
+  async function update() {
+    const res = await fetch("/api/track/" + encodeURIComponent(orderId));
+    if (res.status !== 200) {
+      document.getElementById("track-text").textContent = "Order not found.";
+      return;
+    }
+    const data = await res.json();
+    document.getElementById("track-text").innerHTML = `
+      <b>Order ID:</b> ${data.order_id}<br>
+      <b>Status:</b> ${data.status}<br>
+      <b>ETA:</b> ${data.eta}<br>
+      <b>Driver:</b> ${data.driver}
+    `;
+  }
+
+  update();
+  pollInterval = setInterval(update, 8000);
+}
+
+async function checkSession() {
+  try {
+    const res = await fetch("/api/my_orders");
+    if (res.status === 200) {
+      document.getElementById("profile-area").style.display = "flex";
+      document.getElementById("login-links").style.display = "none";
+
+      const profileRes = await fetch("/api/profile");
+      const data = await profileRes.json();
+
+      document.getElementById("profile-name").textContent = data.name || "User";
+
+      if (data.email === "admin@mealprep.com") {
+        document.getElementById("admin-link").style.display = "inline-block";
+      }
+    }
+  } catch (e) {}
+}
+
+checkSession();
+loadOrders();
+</script>
+
+</body>
+</html>
