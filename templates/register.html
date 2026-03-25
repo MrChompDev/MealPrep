@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register – MealPrep</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">MealPrep</div>
+
+  <nav>
+    <a href="/">Home</a>
+    <a href="/meals">Meals</a>
+    <a href="/tracking">Tracking</a>
+
+    <!-- Hidden on register page -->
+    <div id="login-links" style="display:none;"></div>
+
+    <div id="profile-area" style="display:none; gap:10px;">
+      <span id="profile-name"></span>
+      <a href="/logout" class="btn-logout">Logout</a>
+    </div>
+  </nav>
+</header>
+
+<main class="auth-container">
+  <h1>Create an Account</h1>
+
+  <form id="register-form" class="auth-form">
+    <label>Email</label>
+    <input type="email" id="email" required>
+
+    <label>Password</label>
+    <input type="password" id="password" required>
+
+    <button type="submit" class="btn-primary">Register</button>
+  </form>
+
+  <p>Already have an account? <a href="/login">Login here</a></p>
+</main>
+
+<script>
+// REGISTER FORM HANDLER
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("register-form");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Account created! You can now log in.");
+      window.location.href = "/login";
+    } else {
+      alert(data.message || "Registration failed.");
+    }
+  });
+});
+</script>
+
+<script>
+// SPECIAL SESSION CHECK FOR REGISTER PAGE
+async function checkSession() {
+  try {
+    const res = await fetch("/api/my_orders");
+
+    if (res.status === 200) {
+      window.location.href = "/my_orders";
+    } else {
+      document.getElementById("profile-area").style.display = "none";
+      document.getElementById("login-links").style.display = "none";
+    }
+  } catch (e) {}
+}
+
+checkSession();
+</script>
+
+</body>
+</html>

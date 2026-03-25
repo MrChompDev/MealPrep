@@ -1,0 +1,508 @@
+[
+  {
+    "id": 1,
+    "name": "Salmon Power Bowl",
+    "category": "Seafood",
+    "calories": 550,
+    "price": 16.99,
+    "image": "https://images.unsplash.com/photo-1512058454994-3c9b3f5e8a2b?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Sauce",
+      "Sesame Seeds",
+      "Avocado"
+    ],
+    "allergens": [
+      "Fish",
+      "Sesame"
+    ],
+    "week": 0
+  },
+  {
+    "id": 2,
+    "name": "Lean Beef Burger",
+    "category": "Burgers",
+    "calories": 520,
+    "price": 14.99,
+    "image": "https://images.unsplash.com/photo-1568901346393-5c9d3d4d1b28?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese",
+      "Tomato",
+      "Onion",
+      "Sauce"
+    ],
+    "allergens": [
+      "Gluten",
+      "Dairy"
+    ],
+    "week": 0
+  },
+  {
+    "id": 3,
+    "name": "Veggie Protein Bowl",
+    "category": "Vegetarian",
+    "calories": 480,
+    "price": 13.49,
+    "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese",
+      "Chickpeas",
+      "Avocado"
+    ],
+    "allergens": [
+      "Dairy"
+    ],
+    "week": 1
+  },
+  {
+    "id": 4,
+    "name": "Grilled Chicken Salad",
+    "category": "Low-Carb",
+    "calories": 430,
+    "price": 12.99,
+    "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese",
+      "Croutons",
+      "Dressing"
+    ],
+    "allergens": [
+      "Dairy",
+      "Gluten"
+    ],
+    "week": 1
+  },
+  {
+    "id": 5,
+    "name": "Prawn Garlic Pasta",
+    "category": "Seafood",
+    "calories": 610,
+    "price": 17.49,
+    "image": "https://images.unsplash.com/photo-1555939594-58d4cb5615c9?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Parmesan",
+      "Garlic",
+      "Chili Flakes"
+    ],
+    "allergens": [
+      "Shellfish",
+      "Gluten",
+      "Dairy"
+    ],
+    "week": 0
+  },
+  {
+    "id": 6,
+    "name": "Black Bean Burger",
+    "category": "Burgers",
+    "calories": 510,
+    "price": 13.99,
+    "image": "https://images.unsplash.com/photo-1553979459-d5fbbd86f8b5?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese",
+      "Lettuce",
+      "Onion",
+      "Sauce"
+    ],
+    "allergens": [
+      "Gluten",
+      "Dairy"
+    ],
+    "week": 1
+  },
+  {
+    "id": 7,
+    "name": "Chicken Alfredo Pasta",
+    "category": "Pasta",
+    "calories": 720,
+    "price": 15.99,
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Parmesan",
+      "Cream Sauce"
+    ],
+    "allergens": [
+      "Dairy",
+      "Gluten"
+    ],
+    "week": 0
+  },
+  {
+    "id": 8,
+    "name": "Spicy Tuna Bowl",
+    "category": "Seafood",
+    "calories": 540,
+    "price": 16.49,
+    "image": "https://images.unsplash.com/photo-1529628457182-6f35f081e7b3?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Spicy Mayo",
+      "Sesame"
+    ],
+    "allergens": [
+      "Fish",
+      "Sesame"
+    ],
+    "week": 1
+  },
+  {
+    "id": 9,
+    "name": "BBQ Chicken Wrap",
+    "category": "Wraps",
+    "calories": 590,
+    "price": 12.49,
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "BBQ Sauce",
+      "Cheese"
+    ],
+    "allergens": [
+      "Gluten",
+      "Dairy"
+    ],
+    "week": 0
+  },
+  {
+    "id": 10,
+    "name": "Falafel Wrap",
+    "category": "Vegetarian",
+    "calories": 480,
+    "price": 11.99,
+    "image": "https://images.unsplash.com/photo-1555939594-58d4cb5615c9?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Tahini",
+      "Lettuce"
+    ],
+    "allergens": [
+      "Sesame"
+    ],
+    "week": 1
+  },
+  {
+    "id": 11,
+    "name": "Greek Salad Bowl",
+    "category": "Salads",
+    "calories": 390,
+    "price": 10.99,
+    "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Feta",
+      "Olives"
+    ],
+    "allergens": [
+      "Dairy"
+    ],
+    "week": 0
+  },
+  {
+    "id": 12,
+    "name": "Chicken Caesar Salad",
+    "category": "Salads",
+    "calories": 520,
+    "price": 12.99,
+    "image": "https://images.unsplash.com/photo-1550304943-4f24f02aa459?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Croutons",
+      "Parmesan"
+    ],
+    "allergens": [
+      "Dairy",
+      "Gluten"
+    ],
+    "week": 1
+  },
+  {
+    "id": 13,
+    "name": "High Protein Omelette",
+    "category": "Breakfast",
+    "calories": 430,
+    "price": 9.99,
+    "image": "https://images.unsplash.com/photo-1536998553585-a4ad81858119?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese"
+    ],
+    "allergens": [
+      "Eggs",
+      "Dairy"
+    ],
+    "week": 0
+  },
+  {
+    "id": 14,
+    "name": "Avocado Toast",
+    "category": "Breakfast",
+    "calories": 350,
+    "price": 8.99,
+    "image": "https://images.unsplash.com/photo-1588137378633-dea1336ceaa2?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Tomato"
+    ],
+    "allergens": [
+      "Gluten"
+    ],
+    "week": 1
+  },
+  {
+    "id": 15,
+    "name": "Teriyaki Chicken Bowl",
+    "category": "Bowls",
+    "calories": 620,
+    "price": 14.49,
+    "image": "https://images.unsplash.com/photo-1529628457182-6f35f081e7b3?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Teriyaki Sauce",
+      "Sesame"
+    ],
+    "allergens": [
+      "Soy",
+      "Sesame"
+    ],
+    "week": 0
+  },
+  {
+    "id": 16,
+    "name": "Beef Stir Fry",
+    "category": "Bowls",
+    "calories": 650,
+    "price": 15.49,
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Soy Sauce"
+    ],
+    "allergens": [
+      "Soy"
+    ],
+    "week": 1
+  },
+  {
+    "id": 17,
+    "name": "Keto Chicken Bowl",
+    "category": "Low-Carb",
+    "calories": 410,
+    "price": 13.99,
+    "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese"
+    ],
+    "allergens": [
+      "Dairy"
+    ],
+    "week": 0
+  },
+  {
+    "id": 18,
+    "name": "Keto Beef Bowl",
+    "category": "Low-Carb",
+    "calories": 450,
+    "price": 14.49,
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese"
+    ],
+    "allergens": [
+      "Dairy"
+    ],
+    "week": 1
+  },
+  {
+    "id": 19,
+    "name": "Crispy Chicken Burger",
+    "category": "Burgers",
+    "calories": 680,
+    "price": 15.99,
+    "image": "https://images.unsplash.com/photo-1568901346393-5c9d3d4d1b28?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese",
+      "Sauce"
+    ],
+    "allergens": [
+      "Gluten",
+      "Dairy"
+    ],
+    "week": 0
+  },
+  {
+    "id": 20,
+    "name": "Double Beef Burger",
+    "category": "Burgers",
+    "calories": 820,
+    "price": 17.99,
+    "image": "https://images.unsplash.com/photo-1553979459-d5fbbd86f8b5?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese",
+      "Onion"
+    ],
+    "allergens": [
+      "Gluten",
+      "Dairy"
+    ],
+    "week": 1
+  },
+  {
+    "id": 21,
+    "name": "Shrimp Stir Fry",
+    "category": "Seafood",
+    "calories": 590,
+    "price": 16.99,
+    "image": "https://images.unsplash.com/photo-1555939594-58d4cb5615c9?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Soy Sauce"
+    ],
+    "allergens": [
+      "Shellfish",
+      "Soy"
+    ],
+    "week": 0
+  },
+  {
+    "id": 22,
+    "name": "Grilled Barramundi",
+    "category": "Seafood",
+    "calories": 520,
+    "price": 18.49,
+    "image": "https://images.unsplash.com/photo-1540188939573-5e1e54cab975?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Lemon Butter"
+    ],
+    "allergens": [
+      "Fish",
+      "Dairy"
+    ],
+    "week": 1
+  },
+  {
+    "id": 23,
+    "name": "Veggie Pasta Primavera",
+    "category": "Pasta",
+    "calories": 610,
+    "price": 13.99,
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Parmesan"
+    ],
+    "allergens": [
+      "Dairy",
+      "Gluten"
+    ],
+    "week": 0
+  },
+  {
+    "id": 24,
+    "name": "Creamy Mushroom Pasta",
+    "category": "Pasta",
+    "calories": 640,
+    "price": 14.49,
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cream Sauce"
+    ],
+    "allergens": [
+      "Dairy",
+      "Gluten"
+    ],
+    "week": 1
+  },
+  {
+    "id": 25,
+    "name": "Tofu Stir Fry",
+    "category": "Vegetarian",
+    "calories": 520,
+    "price": 12.99,
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Soy Sauce"
+    ],
+    "allergens": [
+      "Soy"
+    ],
+    "week": 0
+  },
+  {
+    "id": 26,
+    "name": "Veggie Wrap Deluxe",
+    "category": "Wraps",
+    "calories": 480,
+    "price": 11.49,
+    "image": "https://images.unsplash.com/photo-1553979459-d5fbbd86f8b5?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese"
+    ],
+    "allergens": [
+      "Dairy",
+      "Gluten"
+    ],
+    "week": 1
+  },
+  {
+    "id": 27,
+    "name": "Chicken Pesto Pasta",
+    "category": "Pasta",
+    "calories": 690,
+    "price": 15.49,
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Parmesan"
+    ],
+    "allergens": [
+      "Dairy",
+      "Gluten"
+    ],
+    "week": 0
+  },
+  {
+    "id": 28,
+    "name": "Beef Lasagna",
+    "category": "Pasta",
+    "calories": 780,
+    "price": 16.49,
+    "image": "https://images.unsplash.com/photo-1574894709920-11b28e926796?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese"
+    ],
+    "allergens": [
+      "Dairy",
+      "Gluten"
+    ],
+    "week": 1
+  },
+  {
+    "id": 29,
+    "name": "Chicken Burrito Bowl",
+    "category": "Bowls",
+    "calories": 650,
+    "price": 14.99,
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese",
+      "Sour Cream"
+    ],
+    "allergens": [
+      "Dairy"
+    ],
+    "week": 0
+  },
+  {
+    "id": 30,
+    "name": "Beef Burrito Bowl",
+    "category": "Bowls",
+    "calories": 680,
+    "price": 15.49,
+    "image": "https://images.unsplash.com/photo-1553979459-d5fbbd86f8b5?w=400&h=300&fit=crop",
+    "removable_ingredients": [
+      "Cheese",
+      "Sour Cream"
+    ],
+    "allergens": [
+      "Dairy"
+    ],
+    "week": 1
+  },
+  {
+    "name": "test",
+    "description": "test",
+    "price": 9,
+    "calories": 9,
+    "category": "Seafood",
+    "subscription": true,
+    "id": 31,
+    "image": "https://images.unsplash.com/photo-1540188939573-5e1e54cab975?w=400&h=300&fit=crop"
+  }
+]

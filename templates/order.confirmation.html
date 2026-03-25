@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation - MealPrep</title>
+  <link rel="stylesheet" href="/static/css/uber-eats-style.css">
+  <style>
+    .confirmation-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    
+    .success-icon {
+      font-size: 4rem;
+      color: var(--primary-green);
+      margin-bottom: 1rem;
+    }
+    
+    .confirmation-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 1rem;
+    }
+    
+    .confirmation-message {
+      font-size: 1.1rem;
+      color: var(--gray-600);
+      margin-bottom: 2rem;
+    }
+    
+    .order-details {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--gray-200);
+      text-align: left;
+    }
+    
+    .order-id {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary-green);
+      margin-bottom: 1rem;
+    }
+    
+    .delivery-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--gray-600);
+      margin-bottom: 1rem;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    @media (max-width: 768px) {
+      .actions {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .actions .btn {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <a href="/" class="logo">MealPrep</a>
+    
+    <nav>
+      <a href="/">Home</a>
+      <a href="/meals">Menu</a>
+      <a href="/subscription">Subscription</a>
+      <a href="/tracking">Orders</a>
+      <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+      <a href="/profile" id="profile-link" style="display:none;">Profile</a>
+      
+      <div id="login-links">
+        <a href="/login" class="btn btn-secondary">Login</a>
+        <a href="/register" class="btn btn-primary">Sign Up</a>
+      </div>
+      
+      <div id="profile-area" style="display:none; align-items:center; gap:1rem;">
+        <img id="nav-avatar" src="/static/images/default-avatar.png" alt="Account" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+        <span id="nav-name"></span>
+        <a href="/logout" class="btn btn-secondary" style="font-size:0.875rem;">Logout</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="confirmation-container">
+  <div class="success-icon">✅</div>
+  <h1 class="confirmation-title">Order Confirmed!</h1>
+  <p class="confirmation-message">Thank you for your order. We're preparing your delicious meals now!</p>
+  
+  <div class="order-details">
+    <div class="order-id" id="orderId">Order #ORD-12345678</div>
+    
+    <div class="delivery-info">
+      <span>🚚</span>
+      <span>Estimated delivery: 20-30 minutes</span>
+    </div>
+    
+    <div class="delivery-info">
+      <span>📍</span>
+      <span>Your order is being prepared at our kitchen</span>
+    </div>
+    
+    <div class="delivery-info">
+      <span>📱</span>
+      <span>You'll receive a notification when your order is on the way</span>
+    </div>
+  </div>
+  
+  <div class="actions">
+    <a href="/tracking" class="btn btn-primary">Track Order</a>
+    <a href="/meals" class="btn btn-secondary">Order More</a>
+    <a href="/" class="btn btn-secondary">Back to Home</a>
+  </div>
+</main>
+
+<script>
+let currentUser = null;
+
+// Check user login status
+async function checkUserStatus() {
+  try {
+    const response = await fetch('/api/profile');
+    if (response.ok) {
+      currentUser = await response.json();
+      updateUserInterface();
+      return true;
+    }
+  } catch (error) {
+    console.log('User not logged in');
+  }
+  return false;
+}
+
+// Update UI based on login status
+function updateUserInterface() {
+  const loginLinks = document.getElementById('login-links');
+  const profileArea = document.getElementById('profile-area');
+  const adminLink = document.getElementById('admin-link');
+  const profileLink = document.getElementById('profile-link');
+  
+  if (currentUser) {
+    loginLinks.style.display = 'none';
+    profileArea.style.display = 'flex';
+    document.getElementById('nav-name').textContent = currentUser.name;
+    
+    if (currentUser.profile_pic) {
+      document.getElementById('nav-avatar').src = currentUser.profile_pic;
+    }
+    
+    if (currentUser.email === 'admin@mealprep.com') {
+      adminLink.style.display = 'block';
+    }
+    profileLink.style.display = 'block';
+  }
+}
+
+// Get order ID from URL
+function getOrderId() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const orderId = urlParams.get('order_id');
+  if (orderId) {
+    document.getElementById('orderId').textContent = `Order #${orderId}`;
+  }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  checkUserStatus();
+  getOrderId();
+});
+</script>
+
+</body>
+</html>

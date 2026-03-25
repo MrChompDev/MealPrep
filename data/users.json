@@ -1,0 +1,43 @@
+[
+    {
+        "email": "admin@mealprep.com",
+        "password": "mealprepadmin#123",
+        "session": "4322026468ed095bd4a8f837328ea5a7",
+        "name": "Admin",
+        "address": "",
+        "phone": "",
+        "reset_token": null,
+        "is_admin": true,
+        "subscription": null,
+        "subscription_paid": false,
+        "subscription_meals": [],
+        "subscription_card_last4": null,
+        "subscription_renewal_ts": null
+    },
+    {
+        "email": "dev@mealprep.com",
+        "password": "mealprepdev#123",
+        "session": "dev1234567890abcdef",
+        "name": "Developer",
+        "address": "",
+        "phone": "",
+        "reset_token": null,
+        "is_admin": false,
+        "is_developer": true,
+        "subscription": null,
+        "subscription_paid": false,
+        "subscription_meals": [],
+        "subscription_card_last4": null,
+        "subscription_renewal_ts": null
+    },
+    {
+        "email": "buhnerboy2@gmail.com",
+        "password": "97568a6a3ed0a22552cc97fda0c8d974da72d825dd1b4b6473338c3f01ebb8dc",
+        "session": "71e9331768ebb3d205d188cd3547fff4",
+        "name": "Test_Account",
+        "address": "",
+        "phone": "",
+        "reset_token": null,
+        "is_admin": false
+    }
+]

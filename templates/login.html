@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login – MealPrep</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">MealPrep</div>
+
+  <nav>
+    <a href="/">Home</a>
+    <a href="/meals">Meals</a>
+    <a href="/tracking">Tracking</a>
+
+    <!-- Hidden on login page -->
+    <div id="login-links" style="display:none;"></div>
+
+    <div id="profile-area" style="display:none; gap:10px;">
+      <span id="profile-name"></span>
+      <a href="/logout" class="btn-logout">Logout</a>
+    </div>
+  </nav>
+</header>
+
+<main class="auth-container">
+  <h1>Login</h1>
+
+  <form id="login-form" class="auth-form">
+    <label>Email</label>
+    <input type="email" id="email" required>
+
+    <label>Password</label>
+    <input type="password" id="password" required>
+
+    <button type="submit" class="btn-primary">Login</button>
+  </form>
+
+  <p>Don't have an account? <a href="/register">Register here</a></p>
+</main>
+
+<script>
+// LOGIN FORM HANDLER
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("login-form");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      // API returns user object under data.user — detect admin from email
+      const isAdmin = data.user && data.user.email === "admin@mealprep.com";
+      // Redirect to the proper route (do not reference templates folder)
+      window.location.href = isAdmin ? "/admin" : "/my_orders";
+    } else {
+      alert("Invalid login.");
+    }
+  });
+});
+</script>
+
+<script>
+// SPECIAL SESSION CHECK FOR LOGIN PAGE
+async function checkSession() {
+  try {
+    const res = await fetch("/api/my_orders");
+
+    if (res.status === 200) {
+      // already logged in — go to My Orders
+      window.location.href = "/my_orders";
+    } else {
+      document.getElementById("profile-area").style.display = "none";
+      document.getElementById("login-links").style.display = "none";
+    }
+  } catch (e) {}
+}
+
+checkSession();
+</script>
+
+</body>
+</html>

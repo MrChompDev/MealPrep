@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - MealPrep</title>
+  <link rel="stylesheet" href="/static/css/uber-eats-style.css">
+  <style>
+    .checkout-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .checkout-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .checkout-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+    
+    .checkout-header p {
+      color: var(--gray-600);
+      font-size: 1.1rem;
+    }
+    
+    .checkout-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .checkout-section {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 2rem;
+      border: 1px solid var(--gray-200);
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary-green);
+    }
+    
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+    
+    .cart-item-info {
+      flex: 1;
+    }
+    
+    .cart-item-name {
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 0.25rem;
+    }
+    
+    .cart-item-details {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+    
+    .cart-item-price {
+      font-weight: 700;
+      color: var(--primary-green);
+      font-size: 1.1rem;
+    }
+    
+    .cart-quantity {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-right: 1rem;
+    }
+    
+    .quantity-btn {
+      width: 24px;
+      height: 24px;
+      border: 1px solid var(--gray-300);
+      background: var(--white);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    
+    .quantity-btn:hover {
+      background: var(--gray-100);
+      border-color: var(--primary-green);
+    }
+    
+    .quantity-display {
+      min-width: 30px;
+      text-align: center;
+      font-weight: 600;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+    
+    .form-input:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(0, 204, 0, 0.1);
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    .payment-methods {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .payment-method {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .payment-method:hover {
+      border-color: var(--primary-green);
+      background: var(--gray-50);
+    }
+    
+    .payment-method.selected {
+      border-color: var(--primary-green);
+      background: #e8f5e8;
+    }
+    
+    .payment-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .payment-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+    
+    .order-summary {
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+    }
+    
+    .summary-row.total {
+      border-top: 2px solid var(--gray-300);
+      margin-top: 1rem;
+      padding-top: 1rem;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--primary-green);
+    }
+    
+    .delivery-time {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+    
+    .checkout-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .empty-cart {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray-500);
+    }
+    
+    .empty-cart h3 {
+      color: var(--gray-700);
+      margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .checkout-content {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      
+      .payment-methods {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <a href="/" class="logo">MealPrep</a>
+    
+    <nav>
+      <a href="/">Home</a>
+      <a href="/meals">Menu</a>
+      <a href="/subscription">Subscription</a>
+      <a href="/tracking">Orders</a>
+      <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+      <a href="/developer" id="developer-link" style="display:none;">Developer</a>
+      <a href="/profile" id="profile-link" style="display:none;">Profile</a>
+      
+      <div id="login-links">
+        <a href="/login" class="btn btn-secondary">Login</a>
+        <a href="/register" class="btn btn-primary">Sign Up</a>
+      </div>
+      
+      <div id="profile-area" style="display:none; align-items:center; gap:1rem;">
+        <img id="nav-avatar" src="/static/images/default-avatar.png" alt="Account" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+        <span id="nav-name"></span>
+        <a href="/logout" class="btn btn-secondary" style="font-size:0.875rem;">Logout</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="checkout-container">
+  <div class="checkout-header">
+    <h1>🛒 Checkout</h1>
+    <p>Complete your order and enjoy delicious meals delivered to your door</p>
+  </div>
+
+  <div class="checkout-content">
+    <!-- Order Summary -->
+    <div class="checkout-section">
+      <h2 class="section-title">📦 Order Summary</h2>
+      
+      <div id="cartItems">
+        <!-- Cart items will be loaded here -->
+      </div>
+      
+      <div class="order-summary">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="subtotal">$0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Delivery Fee</span>
+          <span id="deliveryFee">$2.99</span>
+        </div>
+        <div class="summary-row">
+          <span>Tax</span>
+          <span id="tax">$0.00</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span id="total">$0.00</span>
+        </div>
+      </div>
+      
+      <div class="delivery-time">
+        <span>🚚</span>
+        <span>Estimated delivery: 20-30 minutes</span>
+      </div>
+    </div>
+
+    <!-- Payment Information -->
+    <div class="checkout-section">
+      <h2 class="section-title">💳 Payment Information</h2>
+      
+      <form id="checkoutForm">
+        <div class="form-group">
+          <label class="form-label">Payment Method</label>
+          <div class="payment-methods">
+            <div class="payment-method selected" data-method="card">
+              <div class="payment-icon">💳</div>
+              <div class="payment-label">Credit Card</div>
+            </div>
+            <div class="payment-method" data-method="paypal">
+              <div class="payment-icon">🅿️</div>
+              <div class="payment-label">PayPal</div>
+            </div>
+            <div class="payment-method" data-method="apple">
+              <div class="payment-icon">🍎</div>
+              <div class="payment-label">Apple Pay</div>
+            </div>
+            <div class="payment-method" data-method="google">
+              <div class="payment-icon">🇬</div>
+              <div class="payment-label">Google Pay</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Credit Card Form -->
+        <div id="cardForm">
+          <div class="form-group">
+            <label class="form-label" for="cardNumber">Card Number</label>
+            <input type="text" id="cardNumber" class="form-input" placeholder="1234 5678 9012 3456" maxlength="19">
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="expiry">Expiry Date</label>
+              <input type="text" id="expiry" class="form-input" placeholder="MM/YY" maxlength="5">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="cvv">CVV</label>
+              <input type="text" id="cvv" class="form-input" placeholder="123" maxlength="4">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="cardName">Name on Card</label>
+            <input type="text" id="cardName" class="form-input" placeholder="John Doe">
+          </div>
+        </div>
+
+        <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.25rem;">📍 Delivery Information</h3>
+        
+        <div class="form-group">
+          <label class="form-label" for="fullName">Full Name</label>
+          <input type="text" id="fullName" class="form-input" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input type="email" id="email" class="form-input" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="phone">Phone Number</label>
+          <input type="tel" id="phone" class="form-input" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="address">Delivery Address</label>
+          <input type="text" id="address" class="form-input" placeholder="Street address" required>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="city">City</label>
+            <input type="text" id="city" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="zipCode">ZIP Code</label>
+            <input type="text" id="zipCode" class="form-input" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="instructions">Delivery Instructions (Optional)</label>
+          <textarea id="instructions" class="form-input" rows="3" placeholder="Leave at door, ring doorbell, etc."></textarea>
+        </div>
+        
+        <div class="checkout-actions">
+          <a href="/meals" class="btn btn-secondary">Continue Shopping</a>
+          <button type="submit" class="btn btn-primary">Place Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<div id="checkoutResult"></div>
+
+<script>
+let currentUser = null;
+let cartItems = [];
+
+// Check user login status
+async function checkUserStatus() {
+  try {
+    const response = await fetch('/api/profile');
+    if (response.ok) {
+      currentUser = await response.json();
+      updateUserInterface();
+      return true;
+    }
+  } catch (error) {
+    console.log('User not logged in');
+  }
+  return false;
+}
+
+// Update UI based on login status
+function updateUserInterface() {
+  const loginLinks = document.getElementById('login-links');
+  const profileArea = document.getElementById('profile-area');
+  const adminLink = document.getElementById('admin-link');
+  const developerLink = document.getElementById('developer-link');
+  const profileLink = document.getElementById('profile-link');
+  
+  if (currentUser) {
+    loginLinks.style.display = 'none';
+    profileArea.style.display = 'flex';
+    document.getElementById('nav-name').textContent = currentUser.name;
+    
+    if (currentUser.profile_pic) {
+      document.getElementById('nav-avatar').src = currentUser.profile_pic;
+    }
+    
+    if (currentUser.email === 'admin@mealprep.com') {
+      adminLink.style.display = 'block';
+    }
+    if (currentUser.email === 'dev@mealprep.com' || currentUser.email === 'admin@mealprep.com') {
+      developerLink.style.display = 'block';
+    }
+    profileLink.style.display = 'block';
+  }
+}
+
+// Load cart from localStorage
+function loadCart() {
+  const savedCart = localStorage.getItem('mealPrepCart');
+  if (savedCart) {
+    cartItems = JSON.parse(savedCart);
+  }
+  displayCart();
+}
+
+// Display cart items
+function displayCart() {
+  const cartContainer = document.getElementById('cartItems');
+  
+  if (cartItems.length === 0) {
+    cartContainer.innerHTML = `
+      <div class="empty-cart">
+        <h3>Your cart is empty</h3>
+        <p>Add some delicious meals to get started!</p>
+        <a href="/meals" class="btn btn-primary">Browse Menu</a>
+      </div>
+    `;
+    updateOrderSummary();
+    return;
+  }
+  
+  cartContainer.innerHTML = cartItems.map((item, index) => `
+    <div class="cart-item">
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-details">${item.description || 'Fresh and delicious'}</div>
+      </div>
+      <div class="cart-quantity">
+        <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">−</button>
+        <span class="quantity-display">${item.quantity}</span>
+        <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
+      </div>
+      <div class="cart-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+    </div>
+  `).join('');
+  
+  updateOrderSummary();
+}
+
+// Update item quantity
+function updateQuantity(index, change) {
+  cartItems[index].quantity += change;
+  
+  if (cartItems[index].quantity <= 0) {
+    cartItems.splice(index, 1);
+  }
+  
+  saveCart();
+  displayCart();
+}
+
+// Save cart to localStorage
+function saveCart() {
+  localStorage.setItem('mealPrepCart', JSON.stringify(cartItems));
+}
+
+// Update order summary
+function updateOrderSummary() {
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const deliveryFee = cartItems.length > 0 ? 2.99 : 0;
+  const tax = subtotal * 0.08; // 8% tax
+  const total = subtotal + deliveryFee + tax;
+  
+  document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+  document.getElementById('deliveryFee').textContent = `$${deliveryFee.toFixed(2)}`;
+  document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+  document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+}
+
+// Payment method selection
+document.querySelectorAll('.payment-method').forEach(method => {
+  method.addEventListener('click', function() {
+    document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+    this.classList.add('selected');
+    
+    // Show/hide card form based on selection
+    const cardForm = document.getElementById('cardForm');
+    if (this.dataset.method === 'card') {
+      cardForm.style.display = 'block';
+    } else {
+      cardForm.style.display = 'none';
+    }
+  });
+});
+
+// Form submission
+document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  if (cartItems.length === 0) {
+    showNotification('Your cart is empty!', 'error');
+    return;
+  }
+  
+  const formData = {
+    items: cartItems,
+    customer: {
+      name: document.getElementById('fullName').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      address: document.getElementById('address').value,
+      city: document.getElementById('city').value,
+      zip_code: document.getElementById('zipCode').value,
+      instructions: document.getElementById('instructions').value
+    },
+    payment: {
+      method: document.querySelector('.payment-method.selected').dataset.method,
+      card_number: document.getElementById('cardNumber').value,
+      expiry: document.getElementById('expiry').value,
+      cvv: document.getElementById('cvv').value,
+      card_name: document.getElementById('cardName').value
+    },
+    total: {
+      subtotal: cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+      delivery_fee: 2.99,
+      tax: cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 0.08,
+      total: 0
+    }
+  };
+  
+  formData.total.total = formData.total.subtotal + formData.total.delivery_fee + formData.total.tax;
+  
+  try {
+    const response = await fetch('/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Clear cart
+      cartItems = [];
+      saveCart();
+      
+      // Show success message
+      showNotification('Order placed successfully!', 'success');
+      
+      // Redirect to order confirmation
+      setTimeout(() => {
+        window.location.href = `/order.confirmation.html?order_id=${result.order_id}`;
+      }, 2000);
+    } else {
+      showNotification(result.error || 'Failed to place order', 'error');
+    }
+  } catch (error) {
+    showNotification('Error placing order', 'error');
+  }
+});
+
+// Format card number input
+document.getElementById('cardNumber').addEventListener('input', function(e) {
+  let value = e.target.value.replace(/\s/g, '');
+  let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+  e.target.value = formattedValue;
+});
+
+// Format expiry date input
+document.getElementById('expiry').addEventListener('input', function(e) {
+  let value = e.target.value.replace(/\D/g, '');
+  if (value.length >= 2) {
+    value = value.slice(0, 2) + '/' + value.slice(2, 4);
+  }
+  e.target.value = value;
+});
+
+// Show notification
+function showNotification(message, type) {
+  const resultDiv = document.getElementById('checkoutResult');
+  resultDiv.innerHTML = `
+    <div class="notification ${type}" style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: ${type === 'success' ? 'var(--primary-green)' : '#dc2626'};
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    ">
+      ${message}
+    </div>
+  `;
+  
+  setTimeout(() => {
+    resultDiv.innerHTML = '';
+  }, 3000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  checkUserStatus();
+  loadCart();
+  
+  // Hide card form by default (will be shown when credit card is selected)
+  document.getElementById('cardForm').style.display = 'none';
+});
+</script>
+
+</body>
+</html>

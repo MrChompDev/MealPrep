@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MealPrep – Intelligent Food Assistant</title>
+  <link rel="stylesheet" href="/static/css/modern-ui.css">
+  <style>
+    /* Additional styles for the AI interface */
+    .ai-interface {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+    
+    .feature-card {
+      background: white;
+      padding: 2rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+    
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem auto;
+      font-size: 1.5rem;
+      color: white;
+    }
+    
+    .typing-indicator {
+      display: none;
+      padding: 0.75rem 1rem;
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      margin-bottom: 1rem;
+      max-width: 70%;
+    }
+    
+    .typing-indicator.active {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+    
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+      0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <a href="/" class="logo">🍽️ MealPrep</a>
+    <nav>
+      <a href="/" class="active">Home</a>
+      <a href="/meals">Meals</a>
+      <a href="/subscription">Subscription</a>
+      <a href="/tracking">Tracking</a>
+      <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+      <a href="/profile" id="profile-link" style="display:none;">Profile</a>
+      
+      <div id="login-links">
+        <a href="/login" class="btn btn-outline">Login</a>
+        <a href="/register" class="btn btn-primary">Register</a>
+      </div>
+      
+      <div id="profile-area" style="display:none; align-items:center; gap:1rem;">
+        <img id="nav-avatar" src="/static/images/default-avatar.png" alt="Account" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+        <span id="nav-name"></span>
+        <a href="/logout" class="btn btn-outline" style="font-size:0.875rem;">Logout</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <h1>🤖 Your Intelligent Food Assistant</h1>
+    <p>Experience personalized meal recommendations, smart ordering, and an AI that learns your preferences over time.</p>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+      <a href="#chat" class="btn btn-secondary">Start Chatting</a>
+      <a href="/meals" class="btn btn-outline">Browse Menu</a>
+    </div>
+  </div>
+</section>
+
+<main class="ai-interface">
+  <!-- Features Section -->
+  <section class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🧠</div>
+      <h3>Smart Learning</h3>
+      <p>Our AI learns from your preferences and behavior to provide increasingly personalized recommendations.</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <h3>Personalized Suggestions</h3>
+      <p>Get meal recommendations based on your dietary preferences, budget, and past orders.</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">💬</div>
+      <h3>Natural Conversations</h3>
+      <p>Chat naturally about meals, ask questions, and place orders through our intelligent interface.</p>
+    </div>
+  </section>
+
+  <!-- AI Chat Section -->
+  <section id="chat" class="ai-assistant">
+    <div class="ai-header">
+      <div class="ai-status"></div>
+      <h3>🤖 Intelligent Food Assistant</h3>
+      <span id="ai-status-text" style="margin-left:auto; font-size:0.875rem; opacity:0.9;">Online</span>
+    </div>
+    
+    <div class="ai-content">
+      <div class="quick-actions">
+        <button class="quick-action" onclick="sendQuickMessage('What do you recommend for me?')">Get Recommendations</button>
+        <button class="quick-action" onclick="sendQuickMessage('Show me healthy options')">Healthy Options</button>
+        <button class="quick-action" onclick="sendQuickMessage('What meals are under $15?')">Budget Friendly</button>
+        <button class="quick-action" onclick="sendQuickMessage('I want to order meal 1')">Quick Order</button>
+      </div>
+      
+      <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+          <div class="message ai">
+            <div class="message-avatar">AI</div>
+            <div class="message-content">
+              Hello! I'm your intelligent food assistant. I can help you discover meals, place orders, and learn your preferences to give better recommendations over time. What would you like to explore today?
+            </div>
+          </div>
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <span style="margin-left:0.5rem; color:#6b7280;">AI is thinking...</span>
+        </div>
+        
+        <div class="chat-input-container">
+          <input type="text" class="chat-input" id="chatInput" placeholder="Ask about meals, place orders, or get recommendations..." onkeypress="handleKeyPress(event)">
+          <button class="chat-send" onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+      
+      <!-- User Insights Section -->
+      <div id="userInsights" style="margin-top:2rem; display:none;">
+        <h3>Your Preferences</h3>
+        <div class="insights-grid" id="insightsGrid">
+          <!-- Insights will be populated here -->
+        </div>
+      </div>
+      
+      <!-- Recommendations Section -->
+      <div id="recommendationsSection" style="margin-top:2rem; display:none;">
+        <h3>Recommended for You</h3>
+        <div class="recommendations" id="recommendationsGrid">
+          <!-- Recommendations will be populated here -->
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="/static/js/app.js"></script>
+<script>
+// Enhanced AI Chat Interface
+let currentUser = null;
+
+// Check user login status
+async function checkUserStatus() {
+  try {
+    const response = await fetch('/api/profile');
+    if (response.ok) {
+      currentUser = await response.json();
+      updateUserInterface();
+      return true;
+    }
+  } catch (error) {
+    console.log('User not logged in');
+  }
+  return false;
+}
+
+// Update UI based on login status
+function updateUserInterface() {
+  const loginLinks = document.getElementById('login-links');
+  const profileArea = document.getElementById('profile-area');
+  const adminLink = document.getElementById('admin-link');
+  const profileLink = document.getElementById('profile-link');
+  
+  if (currentUser) {
+    loginLinks.style.display = 'none';
+    profileArea.style.display = 'flex';
+    document.getElementById('nav-name').textContent = currentUser.name;
+    
+    if (currentUser.profile_pic) {
+      document.getElementById('nav-avatar').src = currentUser.profile_pic;
+    }
+    
+    if (currentUser.email === 'admin@mealprep.com') {
+      adminLink.style.display = 'block';
+    }
+    profileLink.style.display = 'block';
+  }
+}
+
+// Send message to AI
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  
+  if (!message) return;
+  
+  // Check if user is logged in
+  const isLoggedIn = await checkUserStatus();
+  if (!isLoggedIn) {
+    addMessage('Please log in to use the intelligent chatbot features.', 'ai');
+    return;
+  }
+  
+  // Add user message
+  addMessage(message, 'user');
+  input.value = '';
+  
+  // Show typing indicator
+  showTypingIndicator();
+  
+  try {
+    const response = await fetch('/api/chatbot/message', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: message })
+    });
+    
+    const data = await response.json();
+    hideTypingIndicator();
+    
+    if (data.error) {
+      addMessage('Sorry, I encountered an error. Please try again.', 'ai');
+    } else {
+      addMessage(data.response, 'ai');
+      
+      // Handle special responses
+      if (data.recommendations) {
+        showRecommendations(data.recommendations);
+      }
+      
+      if (data.user_insights) {
+        showUserInsights(data.user_insights);
+      }
+      
+      if (data.order_data) {
+        showOrderConfirmation(data);
+      }
+    }
+  } catch (error) {
+    hideTypingIndicator();
+    addMessage('Sorry, I\'m having trouble connecting. Please try again.', 'ai');
+    console.error('Chat error:', error);
+  }
+}
+
+// Send quick message
+function sendQuickMessage(message) {
+  document.getElementById('chatInput').value = message;
+  sendMessage();
+}
+
+// Add message to chat
+function addMessage(text, sender) {
+  const messagesContainer = document.getElementById('chatMessages');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${sender}`;
+  
+  const avatar = document.createElement('div');
+  avatar.className = 'message-avatar';
+  avatar.textContent = sender === 'user' ? 'U' : 'AI';
+  
+  const content = document.createElement('div');
+  content.className = 'message-content';
+  content.textContent = text;
+  
+  messageDiv.appendChild(avatar);
+  messageDiv.appendChild(content);
+  messagesContainer.appendChild(messageDiv);
+  
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Show/hide typing indicator
+function showTypingIndicator() {
+  document.getElementById('typingIndicator').classList.add('active');
+}
+
+function hideTypingIndicator() {
+  document.getElementById('typingIndicator').classList.remove('active');
+}
+
+// Handle enter key
+function handleKeyPress(event) {
+  if (event.key === 'Enter') {
+    sendMessage();
+  }
+}
+
+// Show recommendations
+function showRecommendations(recommendations) {
+  const section = document.getElementById('recommendationsSection');
+  const grid = document.getElementById('recommendationsGrid');
+  
+  grid.innerHTML = '';
+  section.style.display = 'block';
+  
+  recommendations.forEach(rec => {
+    const card = document.createElement('div');
+    card.className = 'recommendation-card';
+    card.innerHTML = `
+      <h4>${rec.name}</h4>
+      <p>${rec.description || 'Delicious meal option'}</p>
+      <div class="price">$${rec.price}</div>
+      <div class="calories">${rec.calories} calories</div>
+      <div style="margin-top:1rem;">
+        <button class="btn btn-primary" onclick="orderMeal(${rec.id})">Order Now</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// Show user insights
+function showUserInsights(insights) {
+  const section = document.getElementById('userInsights');
+  const grid = document.getElementById('insightsGrid');
+  
+  grid.innerHTML = '';
+  section.style.display = 'block';
+  
+  // Order count
+  const orderCard = document.createElement('div');
+  orderCard.className = 'insight-card';
+  orderCard.innerHTML = `
+    <h3>${insights.order_count}</h3>
+    <p>Total Orders</p>
+  `;
+  grid.appendChild(orderCard);
+  
+  // Learning progress
+  const progressCard = document.createElement('div');
+  progressCard.className = 'insight-card';
+  progressCard.innerHTML = `
+    <h3>${insights.learning_progress}%</h3>
+    <p>AI Learning Progress</p>
+  `;
+  grid.appendChild(progressCard);
+  
+  // Favorite categories
+  if (insights.top_categories.length > 0) {
+    const categoriesCard = document.createElement('div');
+    categoriesCard.className = 'insight-card';
+    categoriesCard.innerHTML = `
+      <h3>${insights.top_categories[0]}</h3>
+      <p>Favorite Category</p>
+    `;
+    grid.appendChild(categoriesCard);
+  }
+}
+
+// Show order confirmation
+function showOrderConfirmation(orderData) {
+  const message = `
+    Order detected! 
+    Meals: ${orderData.meals.map(m => m.name).join(', ')}
+    Total: $${orderData.total_price.toFixed(2)}
+    
+    Would you like me to place this order for you?
+  `;
+  addMessage(message, 'ai');
+}
+
+// Order a meal
+async function orderMeal(mealId) {
+  try {
+    const response = await fetch('/api/order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        meals: [{ id: mealId, quantity: 1 }]
+      })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      addMessage(`Great! I've placed your order. Order ID: ${data.order_id}`, 'ai');
+    } else {
+      addMessage('Sorry, I couldn\'t place the order. Please try again.', 'ai');
+    }
+  } catch (error) {
+    addMessage('Sorry, I encountered an error placing your order.', 'ai');
+  }
+}
+
+// Track user behavior
+async function trackBehavior(actionType, targetId, targetType, metadata = {}) {
+  if (!currentUser) return;
+  
+  try {
+    await fetch('/api/ai/track', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action_type: actionType,
+        target_id: targetId,
+        target_type: targetType,
+        metadata: metadata
+      })
+    });
+  } catch (error) {
+    console.log('Behavior tracking failed:', error);
+  }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  checkUserStatus();
+  
+  // Track page view
+  trackBehavior('view', null, 'page', { page: 'home' });
+  
+  // Focus chat input
+  document.getElementById('chatInput').focus();
+});
+
+// Track meal clicks
+document.addEventListener('click', function(e) {
+  if (e.target.closest('.recommendation-card')) {
+    const card = e.target.closest('.recommendation-card');
+    const mealId = card.querySelector('button').onclick.toString().match(/orderMeal\((\d+)\)/)?.[1];
+    if (mealId) {
+      trackBehavior('click', parseInt(mealId), 'meal');
+    }
+  }
+});
+</script>
+
+</body>
+</html>

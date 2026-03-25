@@ -1,0 +1,61 @@
+Section,Description,Links
+Project Overview,"MealPrep is a full-stack meal delivery platform with meals, subscriptions, admin tools, tracking, and real-time updates.",""
+Core Goals,"Deliver a complete meal ordering, subscription, and tracking system with admin controls.",""
+
+Week 1 — Planning & Foundations,"Feature list, tech stack, folder structure, Flask setup, initial JSON files.","https://flask.palletsprojects.com/"
+Week 1 — Folder Structure,"Create /templates, /static/css, /static/js, /data JSON files, /routes.",""
+Week 1 — JSON Setup,"Create meals.json, categories.json, allergies.json, drivers.json, orders.json.",""
+
+Week 2 — UI Wireframes,"Design homepage, meals page, meal detail, checkout, tracking, admin dashboard.","https://www.figma.com/, https://wireframe.cc/"
+Week 2 — Navigation,"Navbar with Home, Meals, Subscription, My Subscription, Tracking, Admin, Cart.",""
+Week 2 — Layout,"Grid system for meals, responsive cards, modals for admin editing.",""
+
+Week 3 — JSON Integration,"Load meals, categories, allergies dynamically from JSON.",""
+Week 3 — Filtering,"Implement category filters, allergy filters, subscription filters.",""
+Week 3 — Meal Detail,"Dynamic meal detail page with ingredients, calories, price, customisation.",""
+
+Week 4 — Backend Logic,"Order structure, ingredient removal, allergy validation, cart system.",""
+Week 4 — Cart System,"Session-based cart with add/remove/update.",""
+Week 4 — Price Calculation,"Recalculate price based on ingredient removals.",""
+
+Week 5 — Email & Tracking,"Send order confirmation emails with tracking link.","https://realpython.com/python-send-email/"
+Week 5 — Tracking System,"Simulated driver movement, ETA, status updates, polling.",""
+Week 5 — Map Integration,"Leaflet + OpenStreetMap for real-time driver location.","https://leafletjs.com/, https://www.openstreetmap.org/"
+
+Week 6 — UI Polish,"Animations, responsiveness, loading states, error messages.",""
+Week 6 — Modals,"Admin add/edit/delete meal modals with validation.",""
+Week 6 — Sorting,"Sort meals by price, category, calories.",""
+
+Week 7 — Testing & Optimisation,"Test routes, JSON I/O, email, tracking, UI; performance improvements.",""
+Week 7 — Debugging,"Fix broken links, missing data, UI inconsistencies.",""
+Week 7 — Security,"Input sanitisation, safe JSON writes.",""
+
+Week 8 — Finalisation,"Documentation, screenshots, demo video, cleanup.",""
+Week 8 — Deployment,"Prepare for hosting on PythonAnywhere, Render, or local school server.",""
+
+Wireframe — Homepage,"Hero section, categories, featured meals, CTA buttons.","https://www.ubereats.com/"
+Wireframe — Meals Page,"Grid layout, filters, sorting, admin controls.","https://www.menulog.com.au/"
+Wireframe — Meal Detail,"Image, description, calories, ingredients, customisation.","https://deliveroo.com.au/"
+Wireframe — Checkout,"Cart summary, delivery info, payment placeholder.",""
+Wireframe — Tracking,"Map, driver emoji, ETA, status timeline.",""
+
+Site Structure — Routes,"/, /meals, /meal/<id>, /checkout, /tracking, /admin, /api/*",""
+Site Structure — Templates,"index.html, meals.html, meal.html, checkout.html, tracking.html, admin.html",""
+Site Structure — Static Files,"style.css, script.js, map.js, admin.js",""
+
+System Logic — Orders,"Orders stored in orders.json with status, meals, driver, ETA.",""
+System Logic — Tracking,"Driver location updates every 8 seconds via polling.",""
+System Logic — Subscriptions,"Weekly subscription generator creates new orders automatically.",""
+
+Admin Features — Add Meal,"Admin can add meals via modal with name, desc, price, calories, category.",""
+Admin Features — Edit Meal,"Admin can edit meals via modal.",""
+Admin Features — Delete Meal,"Admin can delete meals individually or bulk delete.",""
+Admin Features — Bulk Delete,"Select All checkbox + Delete Selected button.",""
+
+Reference — Uber Eats,"Study layout, meal cards, filters, checkout flow.","https://www.ubereats.com/"
+Reference — Menulog,"Explore category filters, meal detail pages, delivery tracking.","https://www.menulog.com.au/"
+Reference — Deliveroo,"Review UI structure, cart system, order tracking.","https://deliveroo.com.au/"
+Reference — Leaflet,"Used for map tracking.","https://leafletjs.com/"
+Reference — OpenStreetMap,"Used for map tiles.","https://www.openstreetmap.org/"
+Reference — Flask Docs,"Backend framework.","https://flask.palletsprojects.com/"
+Reference — SendGrid,"Email sending.","https://sendgrid.com/"

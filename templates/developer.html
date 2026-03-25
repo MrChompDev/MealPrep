@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Dashboard - MealPrep</title>
+  <link rel="stylesheet" href="/static/css/uber-eats-style.css">
+  <style>
+    .developer-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .developer-header {
+      margin-bottom: 2rem;
+    }
+    
+    .developer-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+    
+    .developer-header p {
+      color: var(--gray-600);
+      font-size: 1.1rem;
+    }
+    
+    .dev-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .dev-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 1.5rem;
+      border: 1px solid var(--gray-200);
+      transition: all 0.2s;
+    }
+    
+    .dev-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    
+    .dev-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    
+    .dev-card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .dev-card-icon {
+      font-size: 1.5rem;
+    }
+    
+    .dev-section {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--gray-200);
+    }
+    
+    .dev-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--primary-green);
+    }
+    
+    .dev-section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+    
+    .log-container {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      background: var(--gray-50);
+    }
+    
+    .log-entry {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--gray-200);
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+    }
+    
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+    
+    .log-timestamp {
+      color: var(--gray-500);
+      font-size: 0.8rem;
+    }
+    
+    .log-level {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+    
+    .log-error { background: #fef2f2; color: #dc2626; }
+    .log-warning { background: #fef3c7; color: #d97706; }
+    .log-info { background: #f0f9ff; color: #0369a1; }
+    .log-success { background: #e8f5e8; color: var(--primary-green); }
+    
+    .config-form {
+      display: grid;
+      gap: 1rem;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .form-label {
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+    
+    .form-input, .form-textarea {
+      padding: 0.75rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+    
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(0, 204, 0, 0.1);
+    }
+    
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    
+    .test-chat {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .test-input {
+      flex: 1;
+    }
+    
+    .btn-test {
+      background: var(--primary-green);
+      color: var(--white);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .btn-test:hover {
+      background: var(--primary-dark);
+    }
+    
+    .chat-test-result {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+    }
+    
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 1rem;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+    }
+    
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary-green);
+      display: block;
+    }
+    
+    .stat-label {
+      color: var(--gray-600);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    
+    .refresh-btn {
+      background: var(--primary-green);
+      color: var(--white);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+    
+    .refresh-btn:hover {
+      background: var(--primary-dark);
+    }
+    
+    @media (max-width: 768px) {
+      .dev-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stat-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <a href="/" class="logo">MealPrep</a>
+    
+    <nav>
+      <a href="/">Home</a>
+      <a href="/meals">Menu</a>
+      <a href="/subscription">Subscription</a>
+      <a href="/tracking">Orders</a>
+      <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+      <a href="/developer" class="active">Developer</a>
+      <a href="/profile" id="profile-link" style="display:none;">Profile</a>
+      
+      <div id="profile-area" style="display:flex; align-items:center; gap:1rem;">
+        <img id="nav-avatar" src="/static/images/default-avatar.png" alt="Account" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+        <span id="nav-name"></span>
+        <a href="/logout" class="btn btn-secondary" style="font-size:0.875rem;">Logout</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="developer-container">
+  <div class="developer-header">
+    <h1>👨‍💻 Developer Dashboard</h1>
+    <p>Monitor system performance, view chatbot logs, and manage bot configuration</p>
+  </div>
+
+  <div class="dev-grid">
+    <div class="dev-card">
+      <div class="dev-card-header">
+        <div class="dev-card-title">
+          <span class="dev-card-icon">📊</span>
+          <span>System Status</span>
+        </div>
+        <button class="refresh-btn" onclick="loadSystemStats()">Refresh</button>
+      </div>
+      <div id="systemStats">
+        <!-- System stats will be loaded here -->
+      </div>
+    </div>
+
+    <div class="dev-card">
+      <div class="dev-card-header">
+        <div class="dev-card-title">
+          <span class="dev-card-icon">🤖</span>
+          <span>Bot Status</span>
+        </div>
+        <span class="log-level log-success">Active</span>
+      </div>
+      <div>
+        <div style="margin-bottom: 0.5rem;">
+          <strong>AI Model:</strong> <span id="aiModelStatus">Loading...</span>
+        </div>
+        <div style="margin-bottom: 0.5rem;">
+          <strong>Database:</strong> <span id="dbStatus">Loading...</span>
+        </div>
+        <div>
+          <strong>Uptime:</strong> <span id="uptimeStatus">Loading...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dev-card">
+      <div class="dev-card-header">
+        <div class="dev-card-title">
+          <span class="dev-card-icon">💬</span>
+          <span>Chat Activity</span>
+        </div>
+        <button class="refresh-btn" onclick="loadChatLogs()">Refresh</button>
+      </div>
+      <div>
+        <div style="margin-bottom: 0.5rem;">
+          <strong>Today's Chats:</strong> <span id="todayChats">Loading...</span>
+        </div>
+        <div style="margin-bottom: 0.5rem;">
+          <strong>Total Users:</strong> <span id="totalUsers">Loading...</span>
+        </div>
+        <div>
+          <strong>Avg Response Time:</strong> <span id="avgResponseTime">Loading...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dev-section">
+    <div class="dev-section-header">
+      <h2 class="dev-section-title">📋 System Logs</h2>
+      <button class="refresh-btn" onclick="loadSystemLogs()">Refresh</button>
+    </div>
+    <div class="log-container" id="systemLogs">
+      <!-- System logs will be loaded here -->
+    </div>
+  </div>
+
+  <div class="dev-section">
+    <div class="dev-section-header">
+      <h2 class="dev-section-title">💬 Chatbot Logs</h2>
+      <button class="refresh-btn" onclick="loadChatLogs()">Refresh</button>
+    </div>
+    <div class="log-container" id="chatLogs">
+      <!-- Chat logs will be loaded here -->
+    </div>
+  </div>
+
+  <div class="dev-section">
+    <div class="dev-section-header">
+      <h2 class="dev-section-title">⚙️ Chatbot Configuration</h2>
+      <button class="refresh-btn" onclick="loadChatConfig()">Load</button>
+    </div>
+    
+    <form id="configForm" class="config-form">
+      <div class="form-group">
+        <label class="form-label">Welcome Message</label>
+        <textarea id="welcomeMessage" class="form-textarea" placeholder="Enter welcome message..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Order Confirmation</label>
+        <textarea id="orderConfirmation" class="form-textarea" placeholder="Enter order confirmation message..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Error Message</label>
+        <textarea id="errorMessage" class="form-textarea" placeholder="Enter error message..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Fallback Message</label>
+        <textarea id="fallbackMessage" class="form-textarea" placeholder="Enter fallback message..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Trigger Word</label>
+        <input type="text" id="triggerWord" class="form-input" placeholder="order">
+      </div>
+      
+      <button type="submit" class="btn btn-primary">Save Configuration</button>
+    </form>
+  </div>
+
+  <div class="dev-section">
+    <div class="dev-section-header">
+      <h2 class="dev-section-title">🧪 Test Chatbot</h2>
+    </div>
+    
+    <div class="test-chat">
+      <input type="text" id="testMessage" class="form-input test-input" placeholder="Type a message to test the bot...">
+      <button class="btn-test" onclick="testChatbot()">Test</button>
+    </div>
+    
+    <div id="chatTestResult" class="chat-test-result" style="display: none;">
+      <!-- Test result will be shown here -->
+    </div>
+  </div>
+</main>
+
+<script>
+let currentUser = null;
+
+// Check developer status
+async function checkDeveloperStatus() {
+  try {
+    const response = await fetch('/api/profile');
+    if (response.ok) {
+      currentUser = await response.json();
+      if (currentUser.email === 'dev@mealprep.com' || currentUser.email === 'admin@mealprep.com') {
+        updateDeveloperInterface();
+        return true;
+      }
+    }
+  } catch (error) {
+    console.log('User not logged in');
+  }
+  
+  // Redirect to login if not developer
+  window.location.href = '/login';
+  return false;
+}
+
+// Update developer interface
+function updateDeveloperInterface() {
+  document.getElementById('nav-name').textContent = currentUser.name;
+  if (currentUser.profile_pic) {
+    document.getElementById('nav-avatar').src = currentUser.profile_pic;
+  }
+}
+
+// Load system statistics
+async function loadSystemStats() {
+  try {
+    const response = await fetch('/api/developer/system/stats');
+    if (response.ok) {
+      const data = await response.json();
+      displaySystemStats(data.stats);
+    }
+  } catch (error) {
+    console.error('Error loading system stats:', error);
+  }
+}
+
+// Display system statistics
+function displaySystemStats(stats) {
+  document.getElementById('systemStats').innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-item">
+        <span class="stat-number">${stats.total_users || 0}</span>
+        <span class="stat-label">Total Users</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">${stats.total_meals || 0}</span>
+        <span class="stat-label">Total Meals</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">${stats.total_orders || 0}</span>
+        <span class="stat-label">Total Orders</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">${stats.chat_logs_today || 0}</span>
+        <span class="stat-label">Today's Chats</span>
+      </div>
+    </div>
+  `;
+  
+  // Update bot status
+  document.getElementById('aiModelStatus').textContent = stats.ai_model_status || 'Unknown';
+  document.getElementById('dbStatus').textContent = stats.database_status || 'Unknown';
+  document.getElementById('uptimeStatus').textContent = stats.system_uptime || 'Unknown';
+  
+  // Update chat activity
+  document.getElementById('todayChats').textContent = stats.chat_logs_today || 0;
+  document.getElementById('totalUsers').textContent = stats.total_users || 0;
+  document.getElementById('avgResponseTime').textContent = '1.2s'; // Mock data
+}
+
+// Load system logs
+async function loadSystemLogs() {
+  try {
+    const response = await fetch('/api/developer/system/logs');
+    if (response.ok) {
+      const data = await response.json();
+      displaySystemLogs(data.logs);
+    }
+  } catch (error) {
+    console.error('Error loading system logs:', error);
+  }
+}
+
+// Display system logs
+function displaySystemLogs(logs) {
+  const logsContainer = document.getElementById('systemLogs');
+  
+  if (logs.length === 0) {
+    logsContainer.innerHTML = '<div class="log-entry">No system logs available</div>';
+    return;
+  }
+  
+  logsContainer.innerHTML = logs.slice(0, 50).map(log => `
+    <div class="log-entry">
+      <span class="log-timestamp">${new Date(log.timestamp).toLocaleString()}</span>
+      <span class="log-level log-${log.level}">${log.level.toUpperCase()}</span>
+      <div style="margin-top: 0.25rem;">
+        <strong>${log.source}:</strong> ${log.message}
+      </div>
+    </div>
+  `).join('');
+}
+
+// Load chat logs
+async function loadChatLogs() {
+  try {
+    const response = await fetch('/api/developer/chatbot/logs');
+    if (response.ok) {
+      const data = await response.json();
+      displayChatLogs(data.logs);
+    }
+  } catch (error) {
+    console.error('Error loading chat logs:', error);
+  }
+}
+
+// Display chat logs
+function displayChatLogs(logs) {
+  const logsContainer = document.getElementById('chatLogs');
+  
+  if (logs.length === 0) {
+    logsContainer.innerHTML = '<div class="log-entry">No chat logs available</div>';
+    return;
+  }
+  
+  logsContainer.innerHTML = logs.slice(0, 50).map(log => `
+    <div class="log-entry">
+      <span class="log-timestamp">${new Date(log.timestamp).toLocaleString()}</span>
+      <div style="margin-top: 0.25rem;">
+        <strong>${log.user_email}:</strong> ${log.user_message}
+      </div>
+      <div style="margin-top: 0.25rem; color: var(--primary-green);">
+        <strong>Bot:</strong> ${log.bot_response}
+      </div>
+    </div>
+  `).join('');
+}
+
+// Load chat configuration
+async function loadChatConfig() {
+  try {
+    const response = await fetch('/api/developer/chatbot/config');
+    if (response.ok) {
+      const data = await response.json();
+      populateConfigForm(data.config);
+    }
+  } catch (error) {
+    console.error('Error loading chat config:', error);
+  }
+}
+
+// Populate configuration form
+function populateConfigForm(config) {
+  document.getElementById('welcomeMessage').value = config.welcome_message || '';
+  document.getElementById('orderConfirmation').value = config.order_confirmation || '';
+  document.getElementById('errorMessage').value = config.error_message || '';
+  document.getElementById('fallbackMessage').value = config.fallback_message || '';
+  document.getElementById('triggerWord').value = config.trigger_word || '';
+}
+
+// Save configuration
+document.getElementById('configForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const configData = {
+    welcome_message: document.getElementById('welcomeMessage').value,
+    order_confirmation: document.getElementById('orderConfirmation').value,
+    error_message: document.getElementById('errorMessage').value,
+    fallback_message: document.getElementById('fallbackMessage').value,
+    trigger_word: document.getElementById('triggerWord').value
+  };
+  
+  try {
+    const response = await fetch('/api/developer/chatbot/config', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(configData)
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      showNotification('Configuration saved successfully!', 'success');
+    } else {
+      showNotification(result.error || 'Failed to save configuration', 'error');
+    }
+  } catch (error) {
+    showNotification('Error saving configuration', 'error');
+  }
+});
+
+// Test chatbot
+async function testChatbot() {
+  const message = document.getElementById('testMessage').value.trim();
+  if (!message) {
+    showNotification('Please enter a test message', 'error');
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/developer/chatbot/test', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: message })
+    });
+    
+    const result = await response.json();
+    
+    if (result.error) {
+      showNotification(result.error, 'error');
+    } else {
+      displayTestResult(result);
+    }
+  } catch (error) {
+    showNotification('Error testing chatbot', 'error');
+  }
+}
+
+// Display test result
+function displayTestResult(result) {
+  const resultDiv = document.getElementById('chatTestResult');
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = `
+    <h4>Test Result:</h4>
+    <div style="margin-bottom: 0.5rem;">
+      <strong>Your message:</strong> ${result.message}
+    </div>
+    <div style="margin-bottom: 0.5rem;">
+      <strong>Bot response:</strong> ${result.response}
+    </div>
+    <div style="margin-bottom: 0.5rem;">
+      <strong>Intent:</strong> ${result.intent}
+    </div>
+    <div>
+      <strong>Confidence:</strong> ${(result.confidence * 100).toFixed(1)}%
+    </div>
+  `;
+}
+
+// Show notification
+function showNotification(message, type) {
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${type === 'success' ? 'var(--primary-green)' : '#dc2626'};
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+  `;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  checkDeveloperStatus();
+  loadSystemStats();
+  loadSystemLogs();
+  loadChatLogs();
+  loadChatConfig();
+  
+  // Auto-refresh logs every 30 seconds
+  setInterval(() => {
+    loadSystemLogs();
+    loadChatLogs();
+  }, 30000);
+});
+
+// Add animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
+</script>
+
+</body>
+</html>

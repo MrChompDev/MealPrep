@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - MealPrep</title>
+  <link rel="stylesheet" href="/static/css/uber-eats-style.css">
+  <style>
+    .admin-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .admin-header {
+      margin-bottom: 2rem;
+    }
+    
+    .admin-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+    
+    .admin-header p {
+      color: var(--gray-600);
+      font-size: 1.1rem;
+    }
+    
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .admin-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 1.5rem;
+      border: 1px solid var(--gray-200);
+      transition: all 0.2s;
+    }
+    
+    .admin-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    
+    .admin-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    
+    .admin-card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .admin-card-icon {
+      font-size: 1.5rem;
+    }
+    
+    .admin-card-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+    }
+    
+    .admin-card-label {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+    
+    .admin-card-change {
+      font-size: 0.875rem;
+      color: var(--gray-500);
+      margin-top: 0.5rem;
+    }
+    
+    .change-positive {
+      color: var(--primary-green);
+    }
+    
+    .change-negative {
+      color: #dc2626;
+    }
+    
+    .admin-section {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--gray-200);
+    }
+    
+    .admin-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--primary-green);
+    }
+    
+    .admin-section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .admin-table th,
+    .admin-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .admin-table th {
+      background: var(--gray-50);
+      font-weight: 600;
+      color: var(--gray-700);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .admin-table tr:hover {
+      background: var(--gray-50);
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .status-active {
+      background: #e8f5e8;
+      color: var(--primary-green);
+    }
+    
+    .status-pending {
+      background: #fef3c7;
+      color: #d97706;
+    }
+    
+    .status-completed {
+      background: #f0f9ff;
+      color: #0369a1;
+    }
+    
+    .status-cancelled {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+    
+    .admin-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .btn-action {
+      padding: 0.25rem 0.5rem;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+    
+    .btn-view {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+    
+    .btn-view:hover {
+      background: var(--gray-200);
+    }
+    
+    .btn-edit {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .btn-edit:hover {
+      background: #bfdbfe;
+    }
+    
+    .btn-delete {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+    
+    .btn-delete:hover {
+      background: #fecaca;
+    }
+    
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .quick-action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      color: var(--gray-700);
+    }
+    
+    .quick-action-btn:hover {
+      background: var(--gray-50);
+      border-color: var(--primary-green);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .quick-action-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .quick-action-label {
+      font-weight: 600;
+      text-align: center;
+    }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--gray-300);
+      border-radius: 50%;
+      border-top-color: var(--primary-green);
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+      .admin-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+      
+      .admin-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <a href="/" class="logo">MealPrep</a>
+    
+    <nav>
+      <a href="/">Home</a>
+      <a href="/meals">Menu</a>
+      <a href="/subscription">Subscription</a>
+      <a href="/tracking">Orders</a>
+      <a href="/admin" class="active">Admin</a>
+      <a href="/developer" id="developer-link" style="display:none;">Developer</a>
+      <a href="/profile" id="profile-link" style="display:none;">Profile</a>
+      
+      <div id="profile-area" style="display:flex; align-items:center; gap:1rem;">
+        <img id="nav-avatar" src="/static/images/default-avatar.png" alt="Account" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+        <span id="nav-name"></span>
+        <a href="/logout" class="btn btn-secondary" style="font-size:0.875rem;">Logout</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="admin-container">
+  <div class="admin-header">
+    <h1>🛡️ Admin Dashboard</h1>
+    <p>Manage your meal prep business, track orders, and monitor performance</p>
+  </div>
+
+  <div class="admin-grid" id="statsGrid">
+    <!-- Stats cards will be loaded here -->
+  </div>
+
+  <div class="quick-actions">
+    <a href="/meals" class="quick-action-btn">
+      <div class="quick-action-icon">🍽️</div>
+      <div class="quick-action-label">Manage Meals</div>
+    </a>
+    <button class="quick-action-btn" onclick="exportOrders()">
+      <div class="quick-action-icon">📊</div>
+      <div class="quick-action-label">Export Orders</div>
+    </button>
+    <button class="quick-action-btn" onclick="generateReport()">
+      <div class="quick-action-icon">📈</div>
+      <div class="quick-action-label">Generate Report</div>
+    </button>
+    <button class="quick-action-btn" onclick="backupData()">
+      <div class="quick-action-icon">💾</div>
+      <div class="quick-action-label">Backup Data</div>
+    </button>
+  </div>
+
+  <div class="admin-section">
+    <div class="admin-section-header">
+      <h2 class="admin-section-title">📦 Recent Orders</h2>
+      <button class="btn btn-primary" onclick="refreshOrders()">Refresh</button>
+    </div>
+    <div class="table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody">
+          <!-- Orders will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="admin-section">
+    <div class="admin-section-header">
+      <h2 class="admin-section-title">👥 Active Subscriptions</h2>
+      <button class="btn btn-primary" onclick="refreshSubscriptions()">Refresh</button>
+    </div>
+    <div class="table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Plan</th>
+            <th>Price</th>
+            <th>Frequency</th>
+            <th>Next Delivery</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="subscriptionsTableBody">
+          <!-- Subscriptions will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+let currentUser = null;
+
+// Check admin status
+async function checkAdminStatus() {
+  try {
+    const response = await fetch('/api/profile');
+    if (response.ok) {
+      currentUser = await response.json();
+      if (currentUser.email === 'admin@mealprep.com') {
+        updateAdminInterface();
+        return true;
+      }
+    }
+  } catch (error) {
+    console.log('User not logged in');
+  }
+  
+  // Redirect to login if not admin
+  window.location.href = '/login';
+  return false;
+}
+
+// Update admin interface
+function updateAdminInterface() {
+  document.getElementById('nav-name').textContent = currentUser.name || 'Admin';
+  if (currentUser.profile_pic) {
+    document.getElementById('nav-avatar').src = currentUser.profile_pic;
+  }
+  
+  // Show developer link for admin
+  if (currentUser.email === 'admin@mealprep.com') {
+    document.getElementById('developer-link').style.display = 'inline-block';
+  }
+}
+
+// Load dashboard stats
+async function loadStats() {
+  try {
+    const response = await fetch('/api/admin/stats');
+    if (response.ok) {
+      const stats = await response.json();
+      displayStats(stats);
+    }
+  } catch (error) {
+    console.error('Error loading stats:', error);
+    displayDefaultStats();
+  }
+}
+
+// Display stats
+function displayStats(stats) {
+  const statsGrid = document.getElementById('statsGrid');
+  
+  const statsData = [
+    {
+      icon: '📦',
+      number: stats.total_orders || 0,
+      label: 'Total Orders',
+      change: '+12%',
+      positive: true
+    },
+    {
+      icon: '💰',
+      number: '$' + (stats.total_revenue || 0).toFixed(2),
+      label: 'Total Revenue',
+      change: '+8%',
+      positive: true
+    },
+    {
+      icon: '👥',
+      number: stats.total_customers || 0,
+      label: 'Total Customers',
+      change: '+15%',
+      positive: true
+    },
+    {
+      icon: '🍽️',
+      number: stats.total_meals || 0,
+      label: 'Active Meals',
+      change: '+2',
+      positive: true
+    },
+    {
+      icon: '📋',
+      number: stats.active_subscriptions || 0,
+      label: 'Active Subscriptions',
+      change: '+5%',
+      positive: true
+    },
+    {
+      icon: '⭐',
+      number: (stats.average_rating || 0).toFixed(1),
+      label: 'Average Rating',
+      change: '+0.2',
+      positive: true
+    }
+  ];
+  
+  statsGrid.innerHTML = statsData.map(stat => `
+    <div class="admin-card">
+      <div class="admin-card-header">
+        <div class="admin-card-title">
+          <span class="admin-card-icon">${stat.icon}</span>
+          <span>${stat.label}</span>
+        </div>
+      </div>
+      <div class="admin-card-number">${stat.number}</div>
+      <div class="admin-card-label">${stat.label}</div>
+      <div class="admin-card-change ${stat.positive ? 'change-positive' : 'change-negative'}">
+        ${stat.positive ? '↑' : '↓'} ${stat.change} from last month
+      </div>
+    </div>
+  `).join('');
+}
+
+// Display default stats (fallback)
+function displayDefaultStats() {
+  displayStats({
+    total_orders: 0,
+    total_revenue: 0,
+    total_customers: 0,
+    total_meals: 0,
+    active_subscriptions: 0,
+    average_rating: 0
+  });
+}
+
+// Load recent orders
+async function loadOrders() {
+  try {
+    const response = await fetch('/api/admin/orders');
+    if (response.ok) {
+      const orders = await response.json();
+      displayOrders(orders);
+    }
+  } catch (error) {
+    console.error('Error loading orders:', error);
+    displayOrders([]);
+  }
+}
+
+// Display orders
+function displayOrders(orders) {
+  const tbody = document.getElementById('ordersTableBody');
+  
+  if (orders.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--gray-500);">No orders found</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = orders.slice(0, 10).map(order => `
+    <tr>
+      <td><strong>${order.order_id}</strong></td>
+      <td>${order.user || 'Unknown'}</td>
+      <td>${order.meals ? order.meals.length : 0} items</td>
+      <td><strong>$${(order.total || 0).toFixed(2)}</strong></td>
+      <td>
+        <span class="status-badge status-${getStatusClass(order.status)}">
+          ${formatStatus(order.status)}
+        </span>
+      </td>
+      <td>${formatDate(order.created_at)}</td>
+      <td>
+        <div class="admin-actions">
+          <button class="btn-action btn-view" onclick="viewOrder('${order.order_id}')">View</button>
+          <button class="btn-action btn-edit" onclick="editOrder('${order.order_id}')">Edit</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// Load subscriptions
+async function loadSubscriptions() {
+  try {
+    const response = await fetch('/api/admin/subscriptions');
+    if (response.ok) {
+      const subscriptions = await response.json();
+      displaySubscriptions(subscriptions);
+    }
+  } catch (error) {
+    console.error('Error loading subscriptions:', error);
+    displaySubscriptions([]);
+  }
+}
+
+// Display subscriptions
+function displaySubscriptions(subscriptions) {
+  const tbody = document.getElementById('subscriptionsTableBody');
+  
+  if (subscriptions.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--gray-500);">No subscriptions found</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = subscriptions.slice(0, 10).map(sub => `
+    <tr>
+      <td><strong>${sub.user || 'Unknown'}</strong></td>
+      <td>${sub.plan_name || 'Basic'}</td>
+      <td><strong>$${(sub.price || 0).toFixed(2)}</strong></td>
+      <td>${sub.frequency || 'Weekly'}</td>
+      <td>${formatDate(sub.next_delivery)}</td>
+      <td>
+        <span class="status-badge status-${sub.active ? 'active' : 'pending'}">
+          ${sub.active ? 'Active' : 'Inactive'}
+        </span>
+      </td>
+      <td>
+        <div class="admin-actions">
+          <button class="btn-action btn-view" onclick="viewSubscription('${sub.id}')">View</button>
+          <button class="btn-action btn-edit" onclick="editSubscription('${sub.id}')">Edit</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// Helper functions
+function getStatusClass(status) {
+  switch(status?.toLowerCase()) {
+    case 'delivered': return 'completed';
+    case 'cancelled': return 'cancelled';
+    case 'ready': return 'active';
+    default: return 'pending';
+  }
+}
+
+function formatStatus(status) {
+  switch(status?.toLowerCase()) {
+    case 'preparing': return '👨‍🍳 Preparing';
+    case 'ready': return '✅ Ready';
+    case 'delivered': return '🚚 Delivered';
+    case 'cancelled': return '❌ Cancelled';
+    default: return '⏳ Pending';
+  }
+}
+
+function formatDate(dateString) {
+  if (!dateString) return 'N/A';
+  
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  } catch (error) {
+    return 'Invalid date';
+  }
+}
+
+// Action functions
+function refreshOrders() {
+  loadOrders();
+  showNotification('Orders refreshed');
+}
+
+function refreshSubscriptions() {
+  loadSubscriptions();
+  showNotification('Subscriptions refreshed');
+}
+
+function viewOrder(orderId) {
+  showNotification(`Viewing order ${orderId}`);
+}
+
+function editOrder(orderId) {
+  showNotification(`Editing order ${orderId}`);
+}
+
+function viewSubscription(subId) {
+  showNotification(`Viewing subscription ${subId}`);
+}
+
+function editSubscription(subId) {
+  showNotification(`Editing subscription ${subId}`);
+}
+
+function exportOrders() {
+  showNotification('Exporting orders...');
+}
+
+function generateReport() {
+  showNotification('Generating report...');
+}
+
+function backupData() {
+  showNotification('Creating backup...');
+}
+
+// Show notification
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--primary-green);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+  `;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  checkAdminStatus();
+  loadStats();
+  loadOrders();
+  loadSubscriptions();
+});
+
+// Add animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
+</script>
+
+</body>
+</html>
+    <a href="/subscription">Subscription</a>
+    <a href="/my_subscription">My Subscription</a>
+    <a href="/tracking">Tracking</a>
+    <a href="/admin" class="active">Admin</a>
+
+    <div id="profile-area" style="display:flex; gap:10px;">
+      <span id="profile-name"></span>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+</header>
+
+<main class="admin-container">
+  <h1>Admin Dashboard</h1>
+
+  <div class="admin-grid">
+
+    <!-- Orders Panel -->
+    <div class="admin-card">
+      <h2>All Orders</h2>
+      <div id="orders-list">Loading...</div>
+      <button class="btn" onclick="loadOrders()">Refresh</button>
+    </div>
+
+    <!-- Stats Panel -->
+    <div class="admin-card">
+      <h2>Order Stats</h2>
+      <p id="stats-box">Loading...</p>
+      <button class="btn" onclick="loadStats()">Refresh</button>
+    </div>
+
+    <!-- Subscription Analytics -->
+    <div class="admin-card">
+      <h2>Subscription Analytics</h2>
+      <p id="subs-stats">Loading...</p>
+      <button class="btn" onclick="loadSubsStats()">Refresh</button>
+    </div>
+
+    <!-- Weekly Delivery Trigger -->
+    <div class="admin-card">
+      <h2>Weekly Subscription Delivery</h2>
+      <p>Generate this week's subscription orders.</p>
+      <button class="btn" onclick="runWeekly()">Run Weekly Deliveries</button>
+    </div>
+
+  </div>
+</main>
+
+<script>
+/* -------------------------------
+   LOAD ORDERS
+--------------------------------*/
+async function loadOrders() {
+  const res = await fetch("/api/admin/orders");
+  const orders = await res.json();
+
+  const box = document.getElementById("orders-list");
+  box.innerHTML = "";
+
+  orders.reverse().forEach(o => {
+    box.innerHTML += `
+      <div class="order-item">
+        <strong>${o.order_id}</strong><br>
+        Status: ${o.status}<br>
+        Meals: ${o.meals.map(m => m.name).join(", ")}
+      </div>
+    `;
+  });
+}
+
+/* -------------------------------
+   LOAD ORDER STATS
+--------------------------------*/
+async function loadStats() {
+  const res = await fetch("/api/admin/stats");
+  const s = await res.json();
+
+  document.getElementById("stats-box").innerHTML = `
+    Total orders: <b>${s.total}</b><br>
+    Delivered: <b>${s.delivered}</b><br>
+    Unpaid: <b>${s.unpaid}</b>
+  `;
+}
+
+/* -------------------------------
+   LOAD SUBSCRIPTION ANALYTICS
+--------------------------------*/
+async function loadSubsStats() {
+  const res = await fetch("/api/admin/subscriptions_stats");
+  const s = await res.json();
+
+  document.getElementById("subs-stats").innerHTML = `
+    Active subscriptions: <b>${s.active_subscriptions}</b><br>
+    Cancelled subscriptions: <b>${s.cancelled_subscriptions}</b><br>
+    Est. weekly revenue: <b>$${s.estimated_weekly_revenue.toFixed(2)}</b>
+  `;
+}
+
+/* -------------------------------
+   RUN WEEKLY SUBSCRIPTION DELIVERY
+--------------------------------*/
+async function runWeekly() {
+  if (!confirm("Run weekly subscription deliveries now?")) return;
+
+  const res = await fetch("/api/subscriptions_run", {
+    method: "POST"
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("Weekly deliveries created: " + data.created.join(", "));
+    loadOrders();
+  } else {
+    alert("Error running weekly deliveries.");
+  }
+}
+
+/* -------------------------------
+   LOAD PROFILE
+--------------------------------*/
+async function loadProfile() {
+  const res = await fetch("/api/profile");
+  const data = await res.json();
+  document.getElementById("profile-name").textContent = data.name || "Admin";
+}
+
+/* -------------------------------
+   INIT
+--------------------------------*/
+loadProfile();
+loadOrders();
+loadStats();
+loadSubsStats();
+</script>
+
+</body>
+</html>

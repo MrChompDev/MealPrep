@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subscription - MealPrep</title>
+  <link rel="stylesheet" href="/static/css/uber-eats-style.css">
+  <style>
+    .subscription-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .page-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 1rem;
+    }
+    
+    .page-header p {
+      color: var(--gray-600);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .plan-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 2rem;
+      border: 1px solid var(--gray-200);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .plan-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+    }
+    
+    .plan-card.featured {
+      border: 2px solid var(--primary-green);
+      transform: scale(1.05);
+    }
+    
+    .plan-card.featured::before {
+      content: 'POPULAR';
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--primary-green);
+      color: var(--white);
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 0 0 0 var(--radius);
+    }
+    
+    .plan-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .plan-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+    
+    .plan-price {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+    }
+    
+    .plan-price span {
+      font-size: 1rem;
+      color: var(--gray-600);
+      font-weight: 400;
+    }
+    
+    .plan-description {
+      color: var(--gray-600);
+      margin-bottom: 2rem;
+    }
+    
+    .plan-features {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 2rem;
+    }
+    
+    .plan-features li {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--gray-100);
+      color: var(--gray-700);
+    }
+    
+    .plan-features li:last-child {
+      border-bottom: none;
+    }
+    
+    .plan-features .check-icon {
+      color: var(--primary-green);
+      margin-right: 0.75rem;
+      font-weight: bold;
+    }
+    
+    .plan-action {
+      text-align: center;
+    }
+    
+    .btn-subscribe {
+      width: 100%;
+      padding: 1rem;
+      background: var(--primary-green);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-subscribe:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+    
+    .plan-card.featured .btn-subscribe {
+      background: var(--primary-green);
+      box-shadow: 0 4px 12px rgba(0, 204, 0, 0.3);
+    }
+    
+    .benefits-section {
+      background: var(--gray-50);
+      border-radius: var(--radius-lg);
+      padding: 3rem 2rem;
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+    
+    .benefits-section h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 2rem;
+    }
+    
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .benefit-item {
+      text-align: center;
+    }
+    
+    .benefit-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    .benefit-title {
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+    
+    .benefit-description {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+    
+    .faq-section {
+      margin-bottom: 3rem;
+    }
+    
+    .faq-section h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .faq-item {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1rem;
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+    }
+    
+    .faq-question {
+      padding: 1.5rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      color: var(--gray-900);
+      transition: background 0.2s;
+    }
+    
+    .faq-question:hover {
+      background: var(--gray-50);
+    }
+    
+    .faq-toggle {
+      font-size: 1.2rem;
+      color: var(--gray-500);
+      transition: transform 0.2s;
+    }
+    
+    .faq-item.active .faq-toggle {
+      transform: rotate(180deg);
+    }
+    
+    .faq-answer {
+      padding: 0 1.5rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      color: var(--gray-600);
+    }
+    
+    .faq-item.active .faq-answer {
+      padding: 0 1.5rem 1.5rem;
+      max-height: 200px;
+    }
+    
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 500px;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .modal-header {
+      margin-bottom: 1.5rem;
+    }
+    
+    .modal-header h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+    
+    .modal-body input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-300);
+      outline: none;
+    }
+    
+    .modal-body input:focus {
+      border-color: var(--primary-green);
+    }
+    
+    .modal-footer {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+    
+    .my-subscription {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--gray-200);
+    }
+    
+    .subscription-status {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .status-active {
+      background: #e8f5e8;
+      color: var(--primary-green);
+    }
+    
+    .status-inactive {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <a href="/" class="logo">MealPrep</a>
+    
+    <nav>
+      <a href="/">Home</a>
+      <a href="/meals">Menu</a>
+      <a href="/subscription" class="active">Subscription</a>
+      <a href="/tracking">Orders</a>
+      <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+      <a href="/developer" id="developer-link" style="display:none;">Developer</a>
+      <a href="/profile" id="profile-link" style="display:none;">Profile</a>
+      
+      <div id="login-links">
+        <a href="/login" class="btn btn-secondary">Login</a>
+        <a href="/register" class="btn btn-primary">Sign Up</a>
+      </div>
+      
+      <div id="profile-area" style="display:none; align-items:center; gap:1rem;">
+        <img id="nav-avatar" src="/static/images/default-avatar.png" alt="Account" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+        <span id="nav-name"></span>
+        <a href="/logout" class="btn btn-secondary" style="font-size:0.875rem;">Logout</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="subscription-container">
+  <div class="page-header">
+    <h1>🍽️ Meal Subscription Plans</h1>
+    <p>Save time and money with our flexible meal subscription plans. Get fresh, healthy meals delivered to your door!</p>
+  </div>
+
+  <div id="mySubscription" class="my-subscription" style="display:none;">
+    <!-- Current subscription will be loaded here -->
+  </div>
+
+  <div class="plans-grid" id="plansGrid">
+    <!-- Plans will be loaded here -->
+  </div>
+
+  <div class="benefits-section">
+    <h2>Why Choose Our Subscription?</h2>
+    <div class="benefits-grid">
+      <div class="benefit-item">
+        <div class="benefit-icon">💰</div>
+        <div class="benefit-title">Save Money</div>
+        <div class="benefit-description">Get up to 20% off regular prices with subscription plans</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">⏰</div>
+        <div class="benefit-title">Save Time</div>
+        <div class="benefit-description">No more meal planning - we handle everything for you</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">🥗</div>
+        <div class="benefit-title">Eat Healthier</div>
+        <div class="benefit-description">Nutritionally balanced meals prepared by professional chefs</div>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon">🚚</div>
+        <div class="benefit-title">Free Delivery</div>
+        <div class="benefit-description">Complimentary delivery on all subscription orders</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        <span>How does the subscription work?</span>
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        Choose a plan based on how many meals you need per week. We'll deliver fresh meals to your door according to your schedule. You can pause, modify, or cancel anytime.
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        <span>Can I customize my meals?</span>
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        Yes! Each week you can select your preferred meals from our rotating menu. We accommodate dietary restrictions and preferences.
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        <span>What if I need to skip a week?</span>
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        No problem! You can pause your subscription for any week through your account dashboard. Just give us 48 hours notice.
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        <span>Is there a commitment period?</span>
+        <span class="faq-toggle">▼</span>
+      </div>
+      <div class="faq-answer">
+        No long-term commitments! You can cancel your subscription anytime with no cancellation fees.
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Subscription Modal -->
+<div id="subscriptionModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">Subscribe to Plan</h3>
+      <p id="modalDescription">Choose your delivery preferences</p>
+    </div>
+    <div class="modal-body">
+      <input type="text" id="modalName" placeholder="Your Name" required>
+      <input type="email" id="modalEmail" placeholder="Your Email" required>
+      <input type="tel" id="modalPhone" placeholder="Your Phone Number" required>
+      <input type="text" id="modalAddress" placeholder="Delivery Address" required>
+      <select id="modalFrequency" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border-radius: var(--radius); border: 1px solid var(--gray-300);">
+        <option value="weekly">Weekly Delivery</option>
+        <option value="biweekly">Bi-weekly Delivery</option>
+        <option value="monthly">Monthly Delivery</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmSubscription()">Subscribe</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentUser = null;
+let plans = [];
+let selectedPlan = null;
+
+// Check user login status
+async function checkUserStatus() {
+  try {
+    const response = await fetch('/api/profile');
+    if (response.ok) {
+      currentUser = await response.json();
+      updateUserInterface();
+      return true;
+    }
+  } catch (error) {
+    console.log('User not logged in');
+  }
+  return false;
+}
+
+// Update UI based on login status
+function updateUserInterface() {
+  const loginLinks = document.getElementById('login-links');
+  const profileArea = document.getElementById('profile-area');
+  const adminLink = document.getElementById('admin-link');
+  const developerLink = document.getElementById('developer-link');
+  const profileLink = document.getElementById('profile-link');
+  
+  if (currentUser) {
+    loginLinks.style.display = 'none';
+    profileArea.style.display = 'flex';
+    document.getElementById('nav-name').textContent = currentUser.name;
+    
+    if (currentUser.profile_pic) {
+      document.getElementById('nav-avatar').src = currentUser.profile_pic;
+    }
+    
+    if (currentUser.email === 'admin@mealprep.com') {
+      adminLink.style.display = 'block';
+    }
+    if (currentUser.email === 'dev@mealprep.com' || currentUser.email === 'admin@mealprep.com') {
+      developerLink.style.display = 'block';
+    }
+    profileLink.style.display = 'block';
+  }
+}
+
+// Load subscription plans
+async function loadPlans() {
+  try {
+    const response = await fetch('/api/subscription/plans');
+    if (response.ok) {
+      plans = await response.json();
+      displayPlans();
+    }
+  } catch (error) {
+    console.error('Error loading plans:', error);
+  }
+}
+
+// Load user's current subscription
+async function loadMySubscription() {
+  try {
+    const response = await fetch('/api/my_subscription');
+    if (response.ok) {
+      const subscription = await response.json();
+      displayMySubscription(subscription);
+    }
+  } catch (error) {
+    console.log('No active subscription');
+    document.getElementById('mySubscription').style.display = 'none';
+  }
+}
+
+// Display plans
+function displayPlans() {
+  const plansGrid = document.getElementById('plansGrid');
+  plansGrid.innerHTML = '';
+  
+  plans.forEach((plan, index) => {
+    const isFeatured = index === 1; // Make middle plan featured
+    const planCard = document.createElement('div');
+    planCard.className = `plan-card ${isFeatured ? 'featured' : ''}`;
+    
+    const features = plan.features || [
+      `${plan.meals_per_week} meals per week`,
+      'Fresh ingredients',
+      'Nutritionally balanced',
+      'Free delivery',
+      'Easy online management'
+    ];
+    
+    planCard.innerHTML = `
+      <div class="plan-header">
+        <div class="plan-name">${plan.name}</div>
+        <div class="plan-price">$${plan.price}<span>/week</span></div>
+        <div class="plan-description">${plan.description || 'Perfect for individuals and families'}</div>
+      </div>
+      
+      <ul class="plan-features">
+        ${features.map(feature => `
+          <li>
+            <span class="check-icon">✓</span>
+            ${feature}
+          </li>
+        `).join('')}
+      </ul>
+      
+      <div class="plan-action">
+        <button class="btn-subscribe" onclick="selectPlan('${plan.id}', '${plan.name}', ${plan.price})">
+          Subscribe Now
+        </button>
+      </div>
+    `;
+    
+    plansGrid.appendChild(planCard);
+  });
+}
+
+// Display user's subscription
+function displayMySubscription(subscription) {
+  const mySubDiv = document.getElementById('mySubscription');
+  const isActive = subscription.active;
+  
+  mySubDiv.innerHTML = `
+    <h3>📋 Your Current Subscription</h3>
+    <div class="subscription-status ${isActive ? 'status-active' : 'status-inactive'}">
+      ${isActive ? '✅ Active' : '⏸️ Inactive'}
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+      <div>
+        <strong>Plan:</strong> ${subscription.plan_name}
+      </div>
+      <div>
+        <strong>Price:</strong> $${subscription.price}/week
+      </div>
+      <div>
+        <strong>Meals:</strong> ${subscription.meals_per_week} per week
+      </div>
+      <div>
+        <strong>Next Delivery:</strong> ${subscription.next_delivery || 'N/A'}
+      </div>
+    </div>
+    <div style="margin-top: 1rem;">
+      <button class="btn btn-secondary" onclick="manageSubscription()">
+        Manage Subscription
+      </button>
+    </div>
+  `;
+  
+  mySubDiv.style.display = 'block';
+}
+
+// Select plan
+function selectPlan(planId, planName, planPrice) {
+  selectedPlan = { id: planId, name: planName, price: planPrice };
+  
+  // Pre-fill modal with user info if logged in
+  if (currentUser) {
+    document.getElementById('modalName').value = currentUser.name || '';
+    document.getElementById('modalEmail').value = currentUser.email || '';
+  }
+  
+  document.getElementById('modalTitle').textContent = `Subscribe to ${planName}`;
+  document.getElementById('modalDescription').textContent = `$${planPrice}/week - Get fresh meals delivered to your door`;
+  
+  document.getElementById('subscriptionModal').style.display = 'flex';
+}
+
+// Close modal
+function closeModal() {
+  document.getElementById('subscriptionModal').style.display = 'none';
+}
+
+// Confirm subscription
+async function confirmSubscription() {
+  const name = document.getElementById('modalName').value;
+  const email = document.getElementById('modalEmail').value;
+  const phone = document.getElementById('modalPhone').value;
+  const address = document.getElementById('modalAddress').value;
+  const frequency = document.getElementById('modalFrequency').value;
+  
+  if (!name || !email || !phone || !address) {
+    showNotification('Please fill in all required fields');
+    return;
+  }
+  
+  try {
+    const response = await fetch('/api/subscription/subscribe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        plan_id: selectedPlan.id,
+        name: name,
+        email: email,
+        phone: phone,
+        address: address,
+        frequency: frequency
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      closeModal();
+      showNotification('Subscription successful! Welcome to MealPrep!');
+      loadMySubscription(); // Refresh subscription display
+    } else {
+      showNotification(data.error || 'Subscription failed. Please try again.');
+    }
+  } catch (error) {
+    showNotification('An error occurred. Please try again.');
+  }
+}
+
+// Manage subscription
+function manageSubscription() {
+  showNotification('Subscription management feature coming soon!');
+}
+
+// Toggle FAQ
+function toggleFAQ(element) {
+  const faqItem = element.parentElement;
+  faqItem.classList.toggle('active');
+}
+
+// Show notification
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--primary-green);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+  `;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  checkUserStatus();
+  loadPlans();
+  loadMySubscription();
+});
+
+// Add animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
+</script>
+
+</body>
+</html>
+<body>
+
+<header>
+  <div class="logo">MealPrep</div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/meals">Meals</a>
+    <a href="/subscription" class="active">Subscription</a>
+    <a href="/my_subscription">My Subscription</a>
+    <a href="/tracking">Tracking</a>
+    <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+
+    <div id="login-links" style="display:flex; gap:10px;">
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </div>
+
+    <div id="profile-area" style="display:none; gap:10px;">
+      <span id="profile-name"></span>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+</header>
+
+<main class="sub-container">
+  <h1>Subscription Plans</h1>
+  <div id="plans"></div>
+</main>
+
+<!-- Payment Modal -->
+<div id="pay-modal" class="modal">
+  <div class="modal-content">
+    <h3>Enter Payment Details</h3>
+    <input type="text" id="card-name" placeholder="Name on Card">
+    <input type="text" id="card-number" placeholder="Card Number (16 digits)">
+    <input type="text" id="card-exp" placeholder="Expiry (MM/YY)">
+    <input type="text" id="card-cvv" placeholder="CVV">
+
+    <button class="btn-subscribe" onclick="submitPayment()">Pay & Subscribe</button>
+    <button class="btn-subscribe" style="background:#c62828;" onclick="closePay()">Cancel</button>
+  </div>
+</div>
+
+<script src="/static/js/subscriptions.js"></script>
+
+</body>
+</html>

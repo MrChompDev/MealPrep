@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Orders – MealPrep</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .orders-container { max-width: 900px; margin: 40px auto; }
+    .order-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .order-card h2 { margin: 0 0 10px; }
+    .meal-list { margin-top: 10px; }
+    .meal-item { padding: 5px 0; border-bottom: 1px solid #eee; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MealPrep</div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/meals">Meals</a>
+    <a href="/subscription">Subscription</a>
+    <a href="/my_subscription">My Subscription</a>
+    <a href="/my_orders" class="active">My Orders</a>
+    <a href="/tracking">Tracking</a>
+    <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+
+    <div id="login-links" style="display:flex; gap:10px;">
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </div>
+
+    <div id="profile-area" style="display:none; gap:10px;">
+      <span id="profile-name"></span>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+</header>
+
+<main class="orders-container">
+  <h1>My Orders</h1>
+  <div id="orders"></div>
+</main>
+
+<script>
+async function loadOrders() {
+  const res = await fetch("/api/my_orders");
+
+  if (res.status !== 200) {
+    document.getElementById("orders").innerHTML =
+      "<p>You have no orders or are not logged in.</p>";
+    return;
+  }
+
+  const orders = await res.json();
+  const meals = await fetch("/api/meals").then(r => r.json());
+
+  const ordersDiv = document.getElementById("orders");
+  ordersDiv.innerHTML = "";
+
+  if (orders.length === 0) {
+    ordersDiv.innerHTML = "<p>You have no orders yet.</p>";
+    return;
+  }
+
+  orders.forEach(order => {
+    const mealNames = order.meals
+      .map(id => meals.find(m => m.id === id)?.name || `Meal ID ${id}`)
+      .map(name => `<div class="meal-item">${name}</div>`)
+      .join("");
+
+    ordersDiv.innerHTML += `
+      <div class="order-card">
+        <h2>Order #${order.order_id}</h2>
+        <p><strong>Status:</strong> ${order.status}</p>
+        <p><strong>Driver:</strong> ${order.driver}</p>
+        <p><strong>ETA:</strong> ${order.eta}</p>
+        <p><strong>Created:</strong> ${order.created_at}</p>
+
+        <h3>Meals:</h3>
+        <div class="meal-list">${mealNames}</div>
+      </div>
+    `;
+  });
+}
+
+async function checkSession() {
+  try {
+    const res = await fetch("/api/my_orders");
+    if (res.status === 200) {
+      document.getElementById("profile-area").style.display = "flex";
+      document.getElementById("login-links").style.display = "none";
+
+      const profileRes = await fetch("/api/profile");
+      const data = await profileRes.json();
+
+      document.getElementById("profile-name").textContent = data.name || "User";
+
+      if (data.email === "admin@mealprep.com") {
+        document.getElementById("admin-link").style.display = "inline-block";
+      }
+    }
+  } catch (e) {}
+}
+
+checkSession();
+loadOrders();
+</script>
+
+</body>
+</html>

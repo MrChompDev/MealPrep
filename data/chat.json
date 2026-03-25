@@ -1,0 +1,8 @@
+{
+  "supported_meal": "avocado toast",
+  "trigger_word": "order",
+  "success_response": "Ordered Avocado Toast",
+  "fallback_response": "I can only order Avocado Toast right now.",
+  "unknown_response": "I didn’t understand that."
+}
+

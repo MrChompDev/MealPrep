@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "name": "Weekly Meal Box",
+    "description": "Get 5 chef‑crafted meals delivered every week.",
+    "price": 49.99
+  },
+  {
+    "id": 2,
+    "name": "Family Plan",
+    "description": "10 meals per week designed for families of 4.",
+    "price": 89.99
+  },
+  {
+    "id": 3,
+    "name": "Starter Plan",
+    "description": "3 meals per week — perfect for beginners or busy weeks.",
+    "price": 34.99
+  },
+  {
+    "id": 4,
+    "name": "Balanced Plan",
+    "description": "4 meals per week with balanced nutrition.",
+    "price": 42.99
+  },
+  {
+    "id": 5,
+    "name": "Premium Chef Plan",
+    "description": "5 gourmet meals per week with premium ingredients.",
+    "price": 64.99
+  },
+  {
+    "id": 6,
+    "name": "Couples Plan",
+    "description": "6 meals per week designed for two people.",
+    "price": 72.99
+  },
+  {
+    "id": 7,
+    "name": "High‑Protein Plan",
+    "description": "5 high‑protein meals per week for active lifestyles.",
+    "price": 59.99
+  },
+  {
+    "id": 8,
+    "name": "Vegetarian Plan",
+    "description": "4 plant‑based meals per week.",
+    "price": 39.99
+  },
+  {
+    "id": 9,
+    "name": "Budget Saver Plan",
+    "description": "3 affordable meals per week — best value option.",
+    "price": 27.99
+  },
+  {
+    "id": 10,
+    "name": "Ultimate Family Feast",
+    "description": "12 meals per week for large families.",
+    "price": 109.99
+  },
+  {
+    "id": 11,
+    "name": "Athlete Bulk Plan",
+    "description": "7 high‑calorie meals per week for muscle gain.",
+    "price": 79.99
+  },
+  {
+    "id": 12,
+    "name": "Keto Plan",
+    "description": "5 low‑carb, keto‑friendly meals per week.",
+    "price": 58.99
+  },
+  {
+    "id": 13,
+    "name": "Gluten‑Free Plan",
+    "description": "4 gluten‑free meals per week.",
+    "price": 44.99
+  },
+  {
+    "id": 14,
+    "name": "Vegan Plan",
+    "description": "5 fully vegan meals per week.",
+    "price": 52.99
+  },
+  {
+    "id": 15,
+    "name": "Senior Easy‑Prep Plan",
+    "description": "3 easy‑to‑prepare meals per week for seniors.",
+    "price": 29.99
+  }
+]

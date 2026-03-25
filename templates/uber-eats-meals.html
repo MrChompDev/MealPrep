@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu - MealPrep</title>
+  <link rel="stylesheet" href="/static/css/uber-eats-style.css">
+  <style>
+    .search-section {
+      background: var(--white);
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .search-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      text-align: center;
+    }
+    
+    .search-container h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 1rem;
+    }
+    
+    .search-input-wrapper {
+      position: relative;
+      max-width: 500px;
+      margin: 0 auto 1rem auto;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 1rem 3rem 1rem 1rem;
+      border: 2px solid var(--gray-300);
+      border-radius: var(--radius-lg);
+      font-size: 1.1rem;
+      outline: none;
+    }
+    
+    .search-input:focus {
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(0, 204, 0, 0.1);
+    }
+    
+    .search-icon {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray-500);
+      font-size: 1.2rem;
+    }
+    
+    .filter-section {
+      background: var(--gray-50);
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .filter-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .sort-dropdown {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      background: var(--white);
+      font-size: 0.9rem;
+    }
+    
+    .results-count {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <a href="/" class="logo">MealPrep</a>
+    
+    <nav>
+      <a href="/">Home</a>
+      <a href="/meals" class="active">Menu</a>
+      <a href="/subscription">Subscription</a>
+      <a href="/tracking">Orders</a>
+      <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+      <a href="/profile" id="profile-link" style="display:none;">Profile</a>
+      
+      <div id="login-links">
+        <a href="/login" class="btn btn-secondary">Login</a>
+        <a href="/register" class="btn btn-primary">Sign Up</a>
+      </div>
+      
+      <div id="profile-area" style="display:none; align-items:center; gap:1rem;">
+        <img id="nav-avatar" src="/static/images/default-avatar.png" alt="Account" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+        <span id="nav-name"></span>
+        <a href="/logout" class="btn btn-secondary" style="font-size:0.875rem;">Logout</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<section class="search-section">
+  <div class="search-container">
+    <h1>🍽️ Our Menu</h1>
+    <p style="color: var(--gray-600); font-size: 1.1rem; margin-bottom: 2rem;">
+      Discover delicious, healthy meals prepared fresh daily
+    </p>
+    <div class="search-input-wrapper">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search for meals...">
+      <span class="search-icon">🔍</span>
+    </div>
+  </div>
+</section>
+
+<section class="filter-section">
+  <div class="filter-container">
+    <div class="category-pills" id="categoryPills">
+      <div class="category-pill active" onclick="filterCategory('all')">All</div>
+      <div class="category-pill" onclick="filterCategory('Seafood')">🦐 Seafood</div>
+      <div class="category-pill" onclick="filterCategory('Burgers')">🍔 Burgers</div>
+      <div class="category-pill" onclick="filterCategory('Vegetarian')">🥗 Vegetarian</div>
+      <div class="category-pill" onclick="filterCategory('Low-Carb')">🥬 Low-Carb</div>
+      <div class="category-pill" onclick="filterCategory('Pasta')">🍝 Pasta</div>
+      <div class="category-pill" onclick="filterCategory('Breakfast')">🍳 Breakfast</div>
+      <div class="category-pill" onclick="filterCategory('Wraps')">🌯 Wraps</div>
+      <div class="category-pill" onclick="filterCategory('Bowls')">🍜 Bowls</div>
+      <div class="category-pill" onclick="filterCategory('Salads')">🥬 Salads</div>
+    </div>
+    
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <select class="sort-dropdown" id="sortDropdown" onchange="sortMeals()">
+        <option value="name">Sort by Name</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+        <option value="calories-low">Calories: Low to High</option>
+        <option value="calories-high">Calories: High to Low</option>
+        <option value="rating">Highest Rated</option>
+      </select>
+      <span class="results-count" id="resultsCount">Loading...</span>
+    </div>
+  </div>
+</section>
+
+<main class="container">
+  <div class="meals-grid" id="mealsGrid">
+    <!-- Meals will be loaded here -->
+  </div>
+  
+  <div id="noResults" style="display:none; text-align:center; padding: 3rem;">
+    <h3 style="color: var(--gray-600);">No meals found</h3>
+    <p style="color: var(--gray-500);">Try adjusting your search or filters</p>
+  </div>
+</main>
+
+<!-- Floating Cart -->
+<div class="cart-section" onclick="showCart()">
+  <span>🛒 Cart</span>
+  <span class="cart-count" id="cartCount">0</span>
+</div>
+
+<script>
+let currentUser = null;
+let cartItems = [];
+let allMeals = [];
+let filteredMeals = [];
+
+// Real food image mapping
+const foodImages = {
+  'Salmon Power Bowl': 'https://images.unsplash.com/photo-1519708227658-c5f51ccd3f67?w=400&h=300&fit=crop',
+  'Lean Beef Burger': 'https://images.unsplash.com/photo-1568901341340-a5ee1575e433?w=400&h=300&fit=crop',
+  'Veggie Protein Bowl': 'https://images.unsplash.com/photo-1512621776955-a582671accc5?w=400&h=300&fit=crop',
+  'Grilled Chicken Salad': 'https://images.unsplash.com/photo-1512621776955-a582671accc5?w=400&h=300&fit=crop',
+  'Prawn Garlic Pasta': 'https://images.unsplash.com/photo-1528735602681-3b352b9ab348?w=400&h=300&fit=crop',
+  'Black Bean Burger': 'https://images.unsplash.com/photo-1571091717764-97d010ac4460?w=400&h=300&fit=crop',
+  'Chicken Alfredo Pasta': 'https://images.unsplash.com/photo-1528735602681-3b352b9ab348?w=400&h=300&fit=crop',
+  'Spicy Tuna Bowl': 'https://images.unsplash.com/photo-1519708227658-c5f51ccd3f67?w=400&h=300&fit=crop',
+  'BBQ Chicken Wrap': 'https://images.unsplash.com/photo-1562927970-890b2419e4d3?w=400&h=300&fit=crop',
+  'Falafel Wrap': 'https://images.unsplash.com/photo-1562927970-890b2419e4d3?w=400&h=300&fit=crop',
+  'Greek Salad Bowl': 'https://images.unsplash.com/photo-1512621776955-a582671accc5?w=400&h=300&fit=crop',
+  'Chicken Caesar Salad': 'https://images.unsplash.com/photo-1512621776955-a582671accc5?w=400&h=300&fit=crop',
+  'High Protein Omelette': 'https://images.unsplash.com/photo-1535982333558-331ae556b246?w=400&h=300&fit=crop',
+  'Avocado Toast': 'https://images.unsplash.com/photo-1588137378633-dea1336ce1a2?w=400&h=300&fit=crop',
+  'Teriyaki Chicken Bowl': 'https://images.unsplash.com/photo-1529692236672-2f027475bdc9?w=400&h=300&fit=crop',
+  'Beef Stir Fry': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop',
+  'Keto Chicken Bowl': 'https://images.unsplash.com/photo-1512621776955-a582671accc5?w=400&h=300&fit=crop',
+  'Keto Beef Bowl': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop',
+  'Crispy Chicken Burger': 'https://images.unsplash.com/photo-1568901341340-a5ee1575e433?w=400&h=300&fit=crop',
+  'Double Beef Burger': 'https://images.unsplash.com/photo-1568901341340-a5ee1575e433?w=400&h=300&fit=crop',
+  'Shrimp Stir Fry': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop',
+  'Grilled Barramundi': 'https://images.unsplash.com/photo-1519708227658-c5f51ccd3f67?w=400&h=300&fit=crop',
+  'Veggie Pasta Primavera': 'https://images.unsplash.com/photo-1528735602681-3b352b9ab348?w=400&h=300&fit=crop',
+  'Creamy Mushroom Pasta': 'https://images.unsplash.com/photo-1528735602681-3b352b9ab348?w=400&h=300&fit=crop',
+  'Tofu Stir Fry': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop',
+  'Veggie Wrap Deluxe': 'https://images.unsplash.com/photo-1562927970-890b2419e4d3?w=400&h=300&fit=crop',
+  'Chicken Pesto Pasta': 'https://images.unsplash.com/photo-1528735602681-3b352b9ab348?w=400&h=300&fit=crop',
+  'Beef Lasagna': 'https://images.unsplash.com/photo-1528735602681-3b352b9ab348?w=400&h=300&fit=crop',
+  'Chicken Burrito Bowl': 'https://images.unsplash.com/photo-1562927970-890b2419e4d3?w=400&h=300&fit=crop',
+  'Beef Burrito Bowl': 'https://images.unsplash.com/photo-1562927970-890b2419e4d3?w=400&h=300&fit=crop'
+};
+
+// Check user login status
+async function checkUserStatus() {
+  try {
+    const response = await fetch('/api/profile');
+    if (response.ok) {
+      currentUser = await response.json();
+      updateUserInterface();
+      return true;
+    }
+  } catch (error) {
+    console.log('User not logged in');
+  }
+  return false;
+}
+
+// Update UI based on login status
+function updateUserInterface() {
+  const loginLinks = document.getElementById('login-links');
+  const profileArea = document.getElementById('profile-area');
+  const adminLink = document.getElementById('admin-link');
+  const profileLink = document.getElementById('profile-link');
+  
+  if (currentUser) {
+    loginLinks.style.display = 'none';
+    profileArea.style.display = 'flex';
+    document.getElementById('nav-name').textContent = currentUser.name;
+    
+    if (currentUser.profile_pic) {
+      document.getElementById('nav-avatar').src = currentUser.profile_pic;
+    }
+    
+    if (currentUser.email === 'admin@mealprep.com') {
+      adminLink.style.display = 'block';
+    }
+    profileLink.style.display = 'block';
+  }
+}
+
+// Load meals
+async function loadMeals() {
+  try {
+    const response = await fetch('/api/meals');
+    allMeals = await response.json();
+    filteredMeals = [...allMeals];
+    displayMeals(filteredMeals);
+    updateResultsCount();
+  } catch (error) {
+    console.error('Error loading meals:', error);
+  }
+}
+
+// Display meals with real food images
+function displayMeals(meals) {
+  const grid = document.getElementById('mealsGrid');
+  const noResults = document.getElementById('noResults');
+  
+  if (meals.length === 0) {
+    grid.style.display = 'none';
+    noResults.style.display = 'block';
+    return;
+  }
+  
+  grid.style.display = 'grid';
+  noResults.style.display = 'none';
+  grid.innerHTML = '';
+  
+  meals.forEach(meal => {
+    const rating = generateRating();
+    const reviews = generateReviews();
+    const imageUrl = foodImages[meal.name] || `https://images.unsplash.com/photo-${Date.now()}-${Math.floor(Math.random() * 1000)}/400/300?fit=crop`;
+    
+    const mealCard = document.createElement('div');
+    mealCard.className = 'meal-card';
+    mealCard.innerHTML = `
+      <div class="meal-card-image">
+        <img src="${imageUrl}" alt="${meal.name}" onerror="this.src='https://images.unsplash.com/photo-1546069901-b89579a318a2?w=400&h=300&fit=crop'">
+        ${meal.subscription ? '<div class="meal-card-badge">SUBSCRIPTION</div>' : ''}
+      </div>
+      <div class="meal-card-content">
+        <div class="meal-card-header">
+          <h3 class="meal-card-title">${meal.name}</h3>
+          <div class="meal-card-price">$${meal.price}</div>
+        </div>
+        <p class="meal-card-description">${meal.description || 'Delicious and fresh meal prepared with quality ingredients'}</p>
+        <div class="meal-card-meta">
+          <div class="meal-card-rating">
+            <span class="stars">${rating.stars}</span>
+            <span>${rating.average}</span>
+            <span>(${reviews.length})</span>
+          </div>
+          <div class="meal-card-time">
+            <span>⏱️</span>
+            <span>20-30 min</span>
+          </div>
+          <div class="meal-card-calories">
+            <span>🔥</span>
+            <span>${meal.calories} cal</span>
+          </div>
+        </div>
+      </div>
+      <div class="meal-card-footer">
+        <button class="btn-add-to-cart" onclick="addToCart(${meal.id}, '${meal.name}', ${meal.price})">
+          Add to Cart
+        </button>
+        <button class="btn-favorite" onclick="toggleFavorite(this, ${meal.id})">
+          ❤️
+        </button>
+      </div>
+      <div class="reviews-section" id="reviews-${meal.id}" style="display:none;">
+        <div class="reviews-header">
+          <div class="reviews-summary">
+            <span class="rating-large">${rating.average}</span>
+            <span class="stars">${rating.stars}</span>
+            <span class="reviews-count">(${reviews.length} reviews)</span>
+          </div>
+          <button onclick="toggleReviews(${meal.id})">Hide Reviews</button>
+        </div>
+        ${reviews.map(review => `
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-author">${review.author}</span>
+              <span class="review-date">${review.date}</span>
+              <span class="review-rating">${'⭐'.repeat(review.rating)}</span>
+            </div>
+            <p class="review-comment">${review.comment}</p>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    
+    // Add click to show reviews
+    mealCard.querySelector('.meal-card-rating').addEventListener('click', () => toggleReviews(meal.id));
+    
+    grid.appendChild(mealCard);
+  });
+}
+
+// Generate fake rating
+function generateRating() {
+  const average = (Math.random() * 2 + 3).toFixed(1); // 3.0 to 5.0
+  const fullStars = Math.floor(average);
+  const halfStar = average % 1 >= 0.5 ? 1 : 0;
+  const emptyStars = 5 - fullStars - halfStar;
+  
+  return {
+    average: average,
+    stars: '⭐'.repeat(fullStars) + (halfStar ? '⭐' : '') + '☆'.repeat(emptyStars)
+  };
+}
+
+// Generate fake reviews
+function generateReviews() {
+  const comments = [
+    "Absolutely delicious! Fresh ingredients and perfect portion size.",
+    "Best meal I've had all week. Highly recommend!",
+    "So flavorful and satisfying. Will definitely order again.",
+    "Perfect balance of nutrients and taste. Love it!",
+    "Great quality and fast delivery. Very impressed!",
+    "Fresh, healthy, and tastes amazing. 5 stars!",
+    "Outstanding quality and flavor. Highly recommend!"
+  ];
+  
+  const authors = ["John D.", "Sarah M.", "Mike R.", "Emma L.", "David K.", "Lisa G.", "Tom W."];
+  
+  return Array.from({length: Math.floor(Math.random() * 5) + 3}, () => ({
+    author: authors[Math.floor(Math.random() * authors.length)],
+    rating: Math.floor(Math.random() * 2) + 4, // 4-5 stars
+    comment: comments[Math.floor(Math.random() * comments.length)],
+    date: `${Math.floor(Math.random() * 30) + 1} days ago`
+  }));
+}
+
+// Toggle reviews display
+function toggleReviews(mealId) {
+  const reviewsSection = document.getElementById(`reviews-${mealId}`);
+  reviewsSection.style.display = reviewsSection.style.display === 'none' ? 'block' : 'none';
+}
+
+// Filter by category
+function filterCategory(category) {
+  // Update active pill
+  document.querySelectorAll('.category-pill').forEach(pill => {
+    pill.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  // Filter meals
+  if (category === 'all') {
+    filteredMeals = [...allMeals];
+  } else {
+    filteredMeals = allMeals.filter(meal => meal.category === category);
+  }
+  
+  // Apply current sort
+  sortMeals();
+}
+
+// Sort meals
+function sortMeals() {
+  const sortValue = document.getElementById('sortDropdown').value;
+  
+  switch(sortValue) {
+    case 'name':
+      filteredMeals.sort((a, b) => a.name.localeCompare(b.name));
+      break;
+    case 'price-low':
+      filteredMeals.sort((a, b) => a.price - b.price);
+      break;
+    case 'price-high':
+      filteredMeals.sort((a, b) => b.price - a.price);
+      break;
+    case 'calories-low':
+      filteredMeals.sort((a, b) => a.calories - b.calories);
+      break;
+    case 'calories-high':
+      filteredMeals.sort((a, b) => b.calories - a.calories);
+      break;
+    case 'rating':
+      filteredMeals.sort((a, b) => Math.random() - 0.5); // Random for demo
+      break;
+  }
+  
+  displayMeals(filteredMeals);
+  updateResultsCount();
+}
+
+// Update results count
+function updateResultsCount() {
+  const count = filteredMeals.length;
+  document.getElementById('resultsCount').textContent = `${count} meals found`;
+}
+
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  
+  if (searchTerm === '') {
+    filteredMeals = [...allMeals];
+  } else {
+    filteredMeals = allMeals.filter(meal => 
+      meal.name.toLowerCase().includes(searchTerm) ||
+      meal.category.toLowerCase().includes(searchTerm) ||
+      (meal.description && meal.description.toLowerCase().includes(searchTerm))
+    );
+  }
+  
+  displayMeals(filteredMeals);
+  updateResultsCount();
+});
+
+// Cart functions
+function addToCart(mealId, mealName, price) {
+  cartItems.push({ id: mealId, name: mealName, price: price, quantity: 1 });
+  updateCartCount();
+  showNotification(`${mealName} added to cart!`);
+}
+
+function updateCartCount() {
+  const count = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  document.getElementById('cartCount').textContent = count;
+}
+
+function showCart() {
+  if (cartItems.length === 0) {
+    showNotification('Your cart is empty!');
+    return;
+  }
+  
+  const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const items = cartItems.map(item => `${item.name} x${item.quantity}`).join(', ');
+  
+  showNotification(`Cart: ${items} | Total: $${total.toFixed(2)}`);
+}
+
+function toggleFavorite(button, mealId) {
+  button.classList.toggle('active');
+  showNotification(button.classList.contains('active') ? 'Added to favorites!' : 'Removed from favorites');
+}
+
+// Show notification
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--primary-green);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+  `;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  checkUserStatus();
+  loadMeals();
+});
+
+// Add animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders - MealPrep</title>
+  <link rel="stylesheet" href="/static/css/uber-eats-style.css">
+  <style>
+    .orders-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .page-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 1rem;
+    }
+    
+    .page-header p {
+      color: var(--gray-600);
+      font-size: 1.1rem;
+    }
+    
+    .order-filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      background: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--primary-green);
+      color: var(--white);
+      border-color: var(--primary-green);
+    }
+    
+    .order-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--gray-200);
+      transition: all 0.2s;
+    }
+    
+    .order-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .order-id {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+    
+    .order-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .status-preparing {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+    
+    .status-ready {
+      background: #e8f5e8;
+      color: var(--primary-green);
+    }
+    
+    .status-delivered {
+      background: #f0f9ff;
+      color: #0369a1;
+    }
+    
+    .status-cancelled {
+      background: #fef2f2;
+      color: #dc2626;
+    }
+    
+    .order-items {
+      margin-bottom: 1rem;
+    }
+    
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    
+    .order-item:last-child {
+      border-bottom: none;
+    }
+    
+    .item-name {
+      font-weight: 500;
+      color: var(--gray-900);
+    }
+    
+    .item-quantity {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+    
+    .order-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--gray-200);
+    }
+    
+    .order-total {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary-green);
+    }
+    
+    .order-date {
+      color: var(--gray-500);
+      font-size: 0.875rem;
+    }
+    
+    .delivery-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+    
+    .no-orders {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+    }
+    
+    .no-orders h3 {
+      color: var(--gray-700);
+      margin-bottom: 1rem;
+    }
+    
+    .no-orders p {
+      color: var(--gray-500);
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <a href="/" class="logo">MealPrep</a>
+    
+    <nav>
+      <a href="/">Home</a>
+      <a href="/meals">Menu</a>
+      <a href="/subscription">Subscription</a>
+      <a href="/tracking" class="active">Orders</a>
+      <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+      <a href="/developer" id="developer-link" style="display:none;">Developer</a>
+      <a href="/profile" id="profile-link" style="display:none;">Profile</a>
+      
+      <div id="login-links">
+        <a href="/login" class="btn btn-secondary">Login</a>
+        <a href="/register" class="btn btn-primary">Sign Up</a>
+      </div>
+      
+      <div id="profile-area" style="display:none; align-items:center; gap:1rem;">
+        <img id="nav-avatar" src="/static/images/default-avatar.png" alt="Account" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+        <span id="nav-name"></span>
+        <a href="/logout" class="btn btn-secondary" style="font-size:0.875rem;">Logout</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main class="orders-container">
+  <div class="page-header">
+    <h1>📦 Your Orders</h1>
+    <p>Track your meal orders and delivery status</p>
+  </div>
+
+  <div class="order-filters">
+    <button class="filter-btn active" onclick="filterOrders('all')">All Orders</button>
+    <button class="filter-btn" onclick="filterOrders('preparing')">Preparing</button>
+    <button class="filter-btn" onclick="filterOrders('ready')">Ready</button>
+    <button class="filter-btn" onclick="filterOrders('delivered')">Delivered</button>
+    <button class="filter-btn" onclick="filterOrders('cancelled')">Cancelled</button>
+  </div>
+
+  <div id="ordersList">
+    <!-- Orders will be loaded here -->
+  </div>
+
+  <div id="emptyState" class="no-orders" style="display:none;">
+    <h3>🍽️ No orders yet</h3>
+    <p>You haven't placed any orders yet. Start exploring our delicious meals!</p>
+    <a href="/meals" class="btn btn-primary">Browse Menu</a>
+  </div>
+</main>
+
+<script>
+let currentUser = null;
+let allOrders = [];
+let filteredOrders = [];
+
+// Check user login status
+async function checkUserStatus() {
+  try {
+    const response = await fetch('/api/profile');
+    if (response.ok) {
+      currentUser = await response.json();
+      updateUserInterface();
+      return true;
+    }
+  } catch (error) {
+    console.log('User not logged in');
+  }
+  return false;
+}
+
+// Update UI based on login status
+function updateUserInterface() {
+  const loginLinks = document.getElementById('login-links');
+  const profileArea = document.getElementById('profile-area');
+  const adminLink = document.getElementById('admin-link');
+  const developerLink = document.getElementById('developer-link');
+  const profileLink = document.getElementById('profile-link');
+  
+  if (currentUser) {
+    loginLinks.style.display = 'none';
+    profileArea.style.display = 'flex';
+    document.getElementById('nav-name').textContent = currentUser.name;
+    
+    if (currentUser.profile_pic) {
+      document.getElementById('nav-avatar').src = currentUser.profile_pic;
+    }
+    
+    if (currentUser.email === 'admin@mealprep.com') {
+      adminLink.style.display = 'inline-block';
+    }
+    if (currentUser.email === 'dev@mealprep.com' || currentUser.email === 'admin@mealprep.com') {
+      developerLink.style.display = 'inline-block';
+    }
+    profileLink.style.display = 'inline-block';
+  }
+}
+
+// Load orders
+async function loadOrders() {
+  try {
+    const response = await fetch('/api/my_orders');
+    if (response.ok) {
+      allOrders = await response.json();
+      filteredOrders = [...allOrders];
+      displayOrders();
+    }
+  } catch (error) {
+    console.error('Error loading orders:', error);
+    showEmptyState();
+  }
+}
+
+// Display orders
+function displayOrders() {
+  const ordersList = document.getElementById('ordersList');
+  const emptyState = document.getElementById('emptyState');
+  
+  if (filteredOrders.length === 0) {
+    ordersList.style.display = 'none';
+    emptyState.style.display = 'block';
+    return;
+  }
+  
+  ordersList.style.display = 'block';
+  emptyState.style.display = 'none';
+  ordersList.innerHTML = '';
+  
+  filteredOrders.forEach(order => {
+    const orderCard = document.createElement('div');
+    orderCard.className = 'order-card';
+    
+    const statusClass = getStatusClass(order.status);
+    const statusText = formatStatus(order.status);
+    const orderDate = formatDate(order.created_at);
+    const items = order.meals || [];
+    
+    orderCard.innerHTML = `
+      <div class="order-header">
+        <div>
+          <div class="order-id">${order.order_id}</div>
+          <div class="order-date">${orderDate}</div>
+        </div>
+        <div class="order-status ${statusClass}">${statusText}</div>
+      </div>
+      
+      <div class="order-items">
+        ${items.map(item => `
+          <div class="order-item">
+            <div>
+              <span class="item-name">${item.name || 'Meal'}</span>
+              <span class="item-quantity">x${item.quantity || 1}</span>
+            </div>
+            <span>$${(item.price || 0).toFixed(2)}</span>
+          </div>
+        `).join('')}
+      </div>
+      
+      <div class="order-footer">
+        <div>
+          <div class="order-total">$${(order.total || 0).toFixed(2)}</div>
+          <div class="delivery-info">
+            <span>🚚</span>
+            <span>${order.driver || 'John Doe'}</span>
+            ${order.eta ? `<span>• ETA: ${order.eta}</span>` : ''}
+          </div>
+        </div>
+        <button class="btn btn-secondary" onclick="trackOrder('${order.order_id}')">
+          Track Order
+        </button>
+      </div>
+    `;
+    
+    ordersList.appendChild(orderCard);
+  });
+}
+
+// Get status class
+function getStatusClass(status) {
+  switch(status?.toLowerCase()) {
+    case 'preparing': return 'status-preparing';
+    case 'ready': return 'status-ready';
+    case 'delivered': return 'status-delivered';
+    case 'cancelled': return 'status-cancelled';
+    default: return 'status-preparing';
+  }
+}
+
+// Format status text
+function formatStatus(status) {
+  switch(status?.toLowerCase()) {
+    case 'preparing': return '👨‍🍳 Preparing';
+    case 'ready': return '✅ Ready';
+    case 'delivered': return '🚚 Delivered';
+    case 'cancelled': return '❌ Cancelled';
+    default: return '👨‍🍳 Preparing';
+  }
+}
+
+// Format date
+function formatDate(dateString) {
+  if (!dateString) return 'Unknown date';
+  
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch (error) {
+    return 'Unknown date';
+  }
+}
+
+// Filter orders
+function filterOrders(status) {
+  // Update active button
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  // Filter orders
+  if (status === 'all') {
+    filteredOrders = [...allOrders];
+  } else {
+    filteredOrders = allOrders.filter(order => 
+      order.status?.toLowerCase() === status.toLowerCase()
+    );
+  }
+  
+  displayOrders();
+}
+
+// Track order
+function trackOrder(orderId) {
+  // In a real app, this would navigate to a detailed tracking page
+  // For now, we'll show a simple notification
+  showNotification(`Tracking order ${orderId}`);
+}
+
+// Show empty state
+function showEmptyState() {
+  const ordersList = document.getElementById('ordersList');
+  const emptyState = document.getElementById('emptyState');
+  
+  ordersList.style.display = 'none';
+  emptyState.style.display = 'block';
+}
+
+// Show notification
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--primary-green);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    animation: slideIn 0.3s ease;
+  `;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  checkUserStatus();
+  loadOrders();
+});
+
+// Add animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
+</script>
+
+</body>
+</html>
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MealPrep</div>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/meals">Meals</a>
+    <a href="/subscription">Subscription</a>
+    <a href="/my_subscription">My Subscription</a>
+    <a href="/tracking" class="active">Tracking</a>
+    <a href="/admin" id="admin-link" style="display:none;">Admin</a>
+
+    <div id="login-links" style="display:flex; gap:10px;">
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </div>
+
+    <div id="profile-area" style="display:none; gap:10px;">
+      <span id="profile-name"></span>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+</header>
+
+<main class="track-container">
+  <h1>Your Orders</h1>
+
+  <div id="order-list" class="order-list"></div>
+
+  <h2>Live Tracking</h2>
+  <div class="status-box">
+    <p id="track-text">Select an order above.</p>
+  </div>
+
+  <div id="map"></div>
+</main>
+
+<script>
+let currentOrderId = null;
+let pollInterval = null;
+let lastStatus = null;
+
+let map = null;
+let marker = null;
+
+/* -------------------------------
+   INIT MAP
+--------------------------------*/
+function initMap() {
+  if (map) return;
+
+  map = L.map('map').setView([-28.0, 153.4], 12);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Create emoji marker
+  const emojiIcon = L.divIcon({
+    className: "emoji-marker",
+    html: "🚗"
+  });
+
+  marker = L.marker([-28.0, 153.4], { icon: emojiIcon }).addTo(map);
+}
+
+/* -------------------------------
+   SESSION CHECK
+--------------------------------*/
+async function checkSession() {
+  try {
+    const res = await fetch("/api/my_orders");
+    if (res.status === 200) {
+      document.getElementById("profile-area").style.display = "flex";
+      document.getElementById("login-links").style.display = "none";
+
+      const profileRes = await fetch("/api/profile");
+      const data = await profileRes.json();
+
+      document.getElementById("profile-name").textContent = data.name || "User";
+
+      if (data.email === "admin@mealprep.com") {
+        document.getElementById("admin-link").style.display = "inline-block";
+      }
+    }
+  } catch (e) {}
+}
+
+/* -------------------------------
+   LOAD ORDERS
+--------------------------------*/
+async function loadOrders() {
+  const res = await fetch("/api/my_orders");
+  if (res.status !== 200) {
+    document.getElementById("order-list").innerHTML = "You must be logged in.";
+    return;
+  }
+
+  const orders = await res.json();
+  const list = document.getElementById("order-list");
+  list.innerHTML = "";
+
+  orders.reverse().forEach(o => {
+    list.innerHTML += `
+      <div class="order-item" onclick="selectOrder('${o.order_id}')">
+        <strong>${o.order_id}</strong><br>
+        Status: ${o.status}<br>
+        Meals: ${o.meals.map(m => m.name).join(", ")}
+      </div>
+    `;
+  });
+}
+
+/* -------------------------------
+   SELECT ORDER
+--------------------------------*/
+function selectOrder(orderId) {
+  currentOrderId = orderId;
+  document.getElementById("track-text").innerHTML = "Loading tracking info...";
+
+  initMap();
+
+  if (pollInterval) clearInterval(pollInterval);
+
+  async function update() {
+    const res = await fetch("/api/track/" + encodeURIComponent(orderId));
+    if (res.status !== 200) {
+      document.getElementById("track-text").textContent = "Order not found.";
+      return;
+    }
+
+    const data = await res.json();
+
+    document.getElementById("track-text").innerHTML = `
+      <b>Order ID:</b> ${data.order_id}<br>
+      <b>Status:</b> ${data.status}<br>
+      <b>ETA:</b> ${data.eta}<br>
+      <b>Driver:</b> ${data.driver}
+    `;
+
+    // Move emoji marker
+    if (data.location) {
+      marker.setLatLng([data.location.lat, data.location.lng]);
+      map.panTo([data.location.lat, data.location.lng]);
+    }
+
+    // Push notification on status change
+    if (lastStatus && lastStatus !== data.status) {
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification("Order Update", {
+          body: `Your order is now: ${data.status}`
+        });
+      }
+    }
+    lastStatus = data.status;
+  }
+
+  update();
+  pollInterval = setInterval(update, 8000);
+}
+
+/* -------------------------------
+   NOTIFICATION PERMISSION
+--------------------------------*/
+async function requestNotificationPermission() {
+  if (!("Notification" in window)) return;
+  if (Notification.permission === "default") {
+    await Notification.requestPermission();
+  }
+}
+
+/* -------------------------------
+   INIT
+--------------------------------*/
+checkSession();
+loadOrders();
+requestNotificationPermission();
+</script>
+<script src="/static/js/ai_chatbot.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Password Reset – Request</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<main>
+  <h1>Request password reset</h1>
+  <form id="req-form">
+    <label>Email <input type="email" name="email" required></label>
+    <button type="submit">Send reset link</button>
+  </form>
+  <p id="req-result"></p>
+</main>
+<script>
+document.getElementById("req-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  const res = await fetch("/api/reset_request", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({email: f.get("email")})
+  });
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById("req-result").textContent =
+      "Reset token (demo): " + data.token;
+  } else {
+    document.getElementById("req-result").textContent = "Email not found";
+  }
+});
+</script>
+</body>
+</html>
