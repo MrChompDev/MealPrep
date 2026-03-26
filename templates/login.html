@@ -52,21 +52,48 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
 
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
+    // Disable button during request
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Logging in...";
 
-    const data = await res.json();
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
 
-    if (data.success) {
-      // API returns user object under data.user — detect admin from email
-      const isAdmin = data.user && data.user.email === "admin@mealprep.com";
-      // Redirect to the proper route (do not reference templates folder)
-      window.location.href = isAdmin ? "/admin" : "/my_orders";
-    } else {
-      alert("Invalid login.");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+
+      if (data.success) {
+        // API returns user object under data.user — detect admin from email
+        const isAdmin = data.user && data.user.email === "admin@mealprep.com";
+        const isDeveloper = data.user && data.user.email === "dev@mealprep.com";
+        
+        // Redirect to the proper route
+        if (isAdmin) {
+          window.location.href = "/admin";
+        } else if (isDeveloper) {
+          window.location.href = "/developer";
+        } else {
+          window.location.href = "/my_orders";
+        }
+      } else {
+        alert(data.error || "Invalid login.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert(error.message || "Login failed. Please try again.");
+    } finally {
+      // Re-enable button
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Login";
     }
   });
 });
@@ -85,7 +112,11 @@ async function checkSession() {
       document.getElementById("profile-area").style.display = "none";
       document.getElementById("login-links").style.display = "none";
     }
-  } catch (e) {}
+  } catch (e) {
+    // Network error or server not responding - stay on login page
+    document.getElementById("profile-area").style.display = "none";
+    document.getElementById("login-links").style.display = "none";
+  }
 }
 
 checkSession();

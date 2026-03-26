@@ -61,6 +61,13 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 @app.before_request
 def security_middleware():
     """Security middleware for all requests"""
+    # Skip security checks for static files and login/register endpoints
+    if (request.endpoint and 
+        (request.endpoint.startswith('static') or 
+         request.endpoint in ['login', 'register', 'api_login', 'api_register']) or
+        (request.path and request.path.startswith('/static/'))):
+        return None
+    
     # Get client IP
     client_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ.get('REMOTE_ADDR', 'unknown'))
     
@@ -274,36 +281,44 @@ def logout():
     return redirect("/")
 
 @app.route("/api/login", methods=["POST"])
-@require_security
-@validate_json_input(['email'], {'email': 'email', 'password': 'general'})
 def api_login():
-    data = request.json or {}
-    email = data.get("email")
-    name = data.get("name")
-    password = data.get("password")
+    try:
+        data = request.json or {}
+        email = data.get("email")
+        name = data.get("name")
+        password = data.get("password")
 
-    if not email:
-        return jsonify({"error": "Email required"}), 400
+        if not email:
+            return jsonify({"error": "Email required"}), 400
 
-    # Check for failed login attempts
-    client_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ.get('REMOTE_ADDR', 'unknown'))
-    if not security_manager.check_failed_logins(client_ip, email):
-        return jsonify({"error": "Too many failed login attempts. Please try again later."}), 429
+        # Validate input
+        is_valid, message = security_manager.validate_input(email, 'email')
+        if not is_valid:
+            return jsonify({"error": f"Invalid email: {message}"}), 400
 
-    stored = find_user_by_email(email)
-    if stored and stored.get("password_hash"):
-        if not password or hash_password(password) != stored.get("password_hash"):
-            return jsonify({"error": "Invalid credentials"}), 401
+        # Check for failed login attempts
+        client_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.environ.get('REMOTE_ADDR', 'unknown'))
+        if not security_manager.check_failed_logins(client_ip, email):
+            return jsonify({"error": "Too many failed login attempts. Please try again later."}), 429
 
-    session["user"] = {
-        "email": email,
-        "name": name or (stored.get("name") if stored else email.split("@")[0])
-    }
+        stored = find_user_by_email(email)
+        if stored and stored.get("password_hash"):
+            if not password or hash_password(password) != stored.get("password_hash"):
+                return jsonify({"error": "Invalid credentials"}), 401
 
-    if stored and stored.get("profile_pic"):
-        session["user"]["profile_pic"] = f"/static/uploads/{stored.get('profile_pic')}"
+        session["user"] = {
+            "email": email,
+            "name": name or (stored.get("name") if stored else email.split("@")[0])
+        }
 
-    return jsonify({"success": True, "user": session["user"]})
+        if stored and stored.get("profile_pic"):
+            session["user"]["profile_pic"] = f"/static/uploads/{stored.get('profile_pic')}"
+
+        return jsonify({"success": True, "user": session["user"]})
+    
+    except Exception as e:
+        print(f"Login error: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
 
 @app.route("/api/register", methods=["POST"])
 def api_register():
